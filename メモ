@@ -1,0 +1,25 @@
+🔸コマンド
+npm start
+npm run dev
+python manage.py makemigrations
+python manage.py migrate
+python manage.py runserver
+python manage.py makemigrations opportunities
+source /Users/luojinrui/Documents/ChanceFinder/.venv/bin/activate
+.venv/bin/python backend/opportunities/spiders/tmall_amazon_spider.py
+chmod +x /Users/luojinrui/Documents/ChanceFinder/backend/opportunities/spiders/run_spider.sh
+/Users/luojinrui/Documents/ChanceFinder/backend/opportunities/spiders/run_spider.sh
+
+
+🔸スーパーユーザー
+username:luo
+email:luo@test.com
+password:djre$$$
+         djre$$$!!!
+
+🔸やるべきこと
+・ログイン機能を実装
+
+🔸テストユーザー
+testClient
+djre$$$!!!

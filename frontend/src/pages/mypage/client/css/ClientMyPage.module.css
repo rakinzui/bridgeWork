@@ -1,0 +1,72 @@
+/* 整体页面背景和字体 */
+.client-mypage {
+  min-height: 100vh;
+  width: 100vw;
+  background-color: #8cb4ef; /* 与 Home 页面卡片区域同色 */
+  color: #333; /* 默认字体颜色 */
+  font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  flex-grow: 1;
+  flex: 1;
+  align-items: stretch;
+  overflow-y: auto;
+}
+
+/* 顶部栏 */
+.top-bar {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  font-weight: bold;
+  font-size: 16px;
+  color: #000;
+  position: relative;
+  margin-bottom: 20px;
+  margin-top: 10px;
+  margin-left: -20px;
+}
+
+/* 页面主体 */
+.main-content {
+  padding: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* 各个模块 */
+.task-form-section,
+.task-list-section,
+.broker-request-section {
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.1); /* 半透明效果 */
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+  .client-mypage {
+    padding: 10px;
+  }
+  .top-bar {
+    font-size: 14px;
+    gap: 10px;
+  }
+  .main-content {
+    gap: 20px;
+  }
+  .task-form-section,
+  .task-list-section,
+  .broker-request-section {
+    padding: 15px;
+  }
+}

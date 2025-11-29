@@ -1,0 +1,50 @@
+.task-detail-container {
+  background: linear-gradient(135deg, rgba(230, 251, 255, 0.9), rgba(185, 241, 240, 0.9));
+  backdrop-filter: blur(15px);
+  min-height: 100vh;
+  width: 100vw; /* fill the full width */
+  padding: 40px 20px;
+  color: #222;
+  font-family: "Arial", sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box; /* ensure padding does not affect width */
+}
+
+.back-button {
+  background-color: rgba(0, 122, 122, 0.8);
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-bottom: 30px;
+  transition: all 0.3s ease;
+}
+
+.back-button:hover {
+  background-color: rgba(0, 122, 122, 1);
+  transform: translateY(-2px);
+}
+
+.task-detail-container h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #222;
+  font-size: 2rem;
+}
+
+.task-detail-container p {
+  font-size: 16px;
+  margin: 10px 0;
+  color: #333;
+  width: 100%;
+  max-width: 600px;
+  word-wrap: break-word;
+}
+
+.task-detail-container strong {
+  color: #222;
+}
