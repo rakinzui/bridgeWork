@@ -64,6 +64,7 @@ class Task(models.Model):
         blank=True,
         verbose_name='受託人'
     )
+    title = models.CharField(max_length=255, verbose_name="タイトル")
     task_type = models.CharField(max_length=30, choices=TASK_TYPE_CHOICES)
     price = models.PositiveIntegerField(verbose_name='報酬', help_text='金額（円、整数）')
     description = models.TextField(blank=True)  # 詳細説明

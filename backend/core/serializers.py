@@ -27,9 +27,15 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ("id", "username","role")
 
 class TaskSerializer(serializers.ModelSerializer):
+    client = UserSerializer(read_only=True)
     client_name = serializers.CharField(source="client.username", read_only=True)
     broker_name = serializers.CharField(source="broker.username", read_only=True)
     worker_name = serializers.CharField(source="worker.username", read_only=True)
+    worker = serializers.PrimaryKeyRelatedField(
+        queryset=CustomUser.objects.all(),
+        required=False,
+        allow_null=True
+    )
 
     class Meta:
         model = Task

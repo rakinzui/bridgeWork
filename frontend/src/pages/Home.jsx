@@ -33,6 +33,7 @@ const Home = () => {
   const [filterType, setFilterType] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const [openableOnly, setOpenableOnly] = useState(false);
+  const [sortKey, setSortKey] = useState("updated_desc");
   const { user, setUser } = useContext(UserContext);
   const navigate = useNavigate();
 
@@ -40,6 +41,17 @@ const Home = () => {
     axios.get("http://127.0.0.1:8000/api/tasks/")
       .then(response => setTasks(response.data))
       .catch(err => console.error("Failed to fetch tasks:", err));
+  }, []);
+
+  // Listen for custom event "tasks_updated" to refresh task list
+  useEffect(() => {
+    const handler = () => {
+      axios.get("http://127.0.0.1:8000/api/tasks/")
+        .then(response => setTasks(response.data))
+        .catch(err => console.error("Failed to fetch tasks:", err));
+    };
+    window.addEventListener("tasks_updated", handler);
+    return () => window.removeEventListener("tasks_updated", handler);
   }, []);
 
   useEffect(() => {
@@ -222,6 +234,30 @@ const Home = () => {
             </select>
           </div>
 
+          {/* ソート */}
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <label htmlFor="sortFilter">
+              <strong style={{ color: "#fff" }}>並び替え:</strong>
+            </label>
+            <select
+              id="sortFilter"
+              value={sortKey}
+              onChange={e => setSortKey(e.target.value)}
+              style={{
+                padding: "6px 10px",
+                borderRadius: "4px",
+                border: "none",
+                fontSize: "14px"
+              }}
+            >
+              <option value="">なし</option>
+              <option value="price_asc">報酬（昇順）</option>
+              <option value="price_desc">報酬（降順）</option>
+              <option value="updated_asc">更新日（古→新）</option>
+              <option value="updated_desc">更新日（新→古）</option>
+            </select>
+          </div>
+
           {/* 開けるタスク */}
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <label htmlFor="openableFilter">
@@ -260,8 +296,17 @@ const Home = () => {
 
               return matchType && matchStatus && matchOpenable;
             })
+            .sort((a, b) => {
+              if (!sortKey) return 0;
+              if (sortKey === "price_asc") return (a.price || 0) - (b.price || 0);
+              if (sortKey === "price_desc") return (b.price || 0) - (a.price || 0);
+              if (sortKey === "updated_asc") return new Date(a.updated_at) - new Date(b.updated_at);
+              if (sortKey === "updated_desc") return new Date(b.updated_at) - new Date(a.updated_at);
+              return 0;
+            })
             .map(task => (
               <div key={task.id} className={styles["task-card"]} onClick={() => handleDetail(task)}>
+                <p><strong>タイトル:</strong> {task.title || "未設定"}</p>
                 <p><strong>タスク種類:</strong> {taskTypeMap[task.task_type] || task.task_type}</p>
                 <p><strong>依頼者:</strong> {task.client?.username}</p>
                 <p><strong>仲介人:</strong> {task.broker?.username || '応募なし'}</p>

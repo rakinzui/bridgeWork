@@ -15,7 +15,7 @@ const taskTypes = {
 const ClientTaskForm = ({ user }) => {
   const [formData, setFormData] = useState({
     title: "",
-    type: "",
+    task_type: "",
     description: "",
     price: "",
     deadline: ""
@@ -31,7 +31,7 @@ const ClientTaskForm = ({ user }) => {
     e.preventDefault();
     setMessage("");
 
-    if (!formData.title || !formData.type || !formData.description || !formData.price) {
+    if (!formData.title || !formData.task_type || !formData.description || !formData.price) {
       setMessage("すべての必須項目を入力してください ❌");
       return;
     }
@@ -42,14 +42,18 @@ const ClientTaskForm = ({ user }) => {
     };
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/client/tasks/", {
+      console.log(postData)
+      const res = await fetch("http://127.0.0.1:8000/api/client/tasks/create/", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("access")}`
+        },
         body: JSON.stringify(postData)
       });
       if (res.ok) {
         setMessage("タスクを公開しました ✅");
-        setFormData({ title: "", type: "", description: "", price: "", deadline: "" });
+        setFormData({ title: "", task_type: "", description: "", price: "", deadline: "" });
       } else {
         const errData = await res.json();
         setMessage("公開失敗 ❌: " + JSON.stringify(errData));
@@ -74,7 +78,7 @@ const ClientTaskForm = ({ user }) => {
         />
 
         <label>タスク種類</label>
-        <select name="type" value={formData.type} onChange={handleChange} required>
+        <select name="task_type" value={formData.task_type} onChange={handleChange} required>
           <option value="">選択してください</option>
           {Object.entries(taskTypes).map(([key, label]) => (
             <option key={key} value={key}>{label}</option>

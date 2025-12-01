@@ -47,7 +47,7 @@ class TaskDetailView(generics.RetrieveAPIView):
 def create_task(request):
     serializer = TaskSerializer(data=request.data)
     if serializer.is_valid():
-        serializer.save(client=request.user)
+        serializer.save()  # 不覆盖 client，使用前端传来的值
         return Response(serializer.data, status=201)
     return Response(serializer.errors, status=400)
 

@@ -7,9 +7,10 @@ const ClientBrokerRequestList = () => {
   useEffect(() => {
     const fetchRequests = async () => {
       try {
-        const token = localStorage.getItem("access");
-        const response = await axios.get("/api/client/broker-requests/", {
-          headers: { Authorization: `Bearer ${token}` },
+        const response = await axios.get("http://127.0.0.1:8000/client/broker-requests/", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access")}`,
+          },
         });
         if (Array.isArray(response.data)) {
           setRequests(response.data);
