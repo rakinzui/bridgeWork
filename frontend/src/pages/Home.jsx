@@ -3,30 +3,19 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import styles from "./css/Home.module.css";
 import { UserContext } from "../context/UserContext";
+import { ROLE_CHOICES,TASK_TYPE_CHOICES,STATUS_CHOICES,BROKER_REQUEST_STATUS_CHOICES} from "../config/choices";
 
-const taskTypeMap = {
-  software_dev: "ソフトウェア開発",
-  video_edit: "ビデオ編集",
-  graphic_design: "グラフィックデザイン",
-  writing: "ライティング/コンテンツ作成",
-  translation: "翻訳",
-  consulting: "オンラインコンサルティング",
-  digital_marketing: "デジタルマーケティング",
-  data_analysis: "データ分析"
-};
+const taskTypeMap = Object.fromEntries(
+  TASK_TYPE_CHOICES.map(choice => [choice.value, choice.label])
+);
 
-const statusMap = {
-  open: "公開中",
-  in_progress: "進行中",
-  completed: "完了",
-  canceled: "キャンセル"
-};
+const statusMap = Object.fromEntries(
+  STATUS_CHOICES.map(choice => [choice.value, choice.label])
+);
 
-const roleMap = {
-  client: "依頼者",
-  broker: "仲介者",
-  worker: "受託者"
-};
+const roleMap = Object.fromEntries(
+  ROLE_CHOICES.map(choice => [choice.value, choice.label])
+);
 
 const Home = () => {
   const [tasks, setTasks] = useState([]);
@@ -169,7 +158,7 @@ const Home = () => {
             localStorage.removeItem("refresh");
             localStorage.removeItem("user");
             setUser(null);
-            navigate("/login");
+            navigate("/");
           }}
         >
           ログアウト

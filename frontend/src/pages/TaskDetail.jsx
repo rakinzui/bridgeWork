@@ -2,24 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import styles from "./css/TaskDetail.module.css";
+import { TASK_TYPE_CHOICES, STATUS_CHOICES } from "../config/choices";
 
-const taskTypeMap = {
-  software_dev: "ソフトウェア開発",
-  video_edit: "ビデオ編集",
-  graphic_design: "グラフィックデザイン",
-  writing: "ライティング/コンテンツ作成",
-  translation: "翻訳",
-  consulting: "オンラインコンサルティング",
-  digital_marketing: "デジタルマーケティング",
-  data_analysis: "データ分析"
-};
-
-const statusMap = {
-  open: "公開中",
-  in_progress: "進行中",
-  completed: "完了",
-  canceled: "キャンセル"
-};
+const taskTypeMap = Object.fromEntries(TASK_TYPE_CHOICES.map(item => [item.value, item.label]));
+const statusMap = Object.fromEntries(STATUS_CHOICES.map(item => [item.value, item.label]));
 
 const TaskDetail = () => {
   const { id } = useParams();

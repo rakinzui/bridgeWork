@@ -3,6 +3,7 @@ from django.db import models
 
 import random
 from django.db import models
+from .choices import (ROLE_CHOICES, TASK_TYPE_CHOICES, STATUS_CHOICES, BROKER_REQUEST_STATUS_CHOICES)
 
 def generate_8digit_id():
     """生成唯一8位数字ID"""
@@ -12,11 +13,6 @@ def generate_8digit_id():
             return number
 
 class CustomUser(AbstractUser):
-    ROLE_CHOICES = [
-        ('client', '依頼人'),
-        ('broker', '中間人'),
-        ('worker', '受託人'),
-    ]
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='client')
 
     def __str__(self):
@@ -24,16 +20,6 @@ class CustomUser(AbstractUser):
     
 
 class Task(models.Model):
-    TASK_TYPE_CHOICES = [
-        ('software_dev', 'ソフトウェア開発'),
-        ('video_edit', 'ビデオ編集'),
-        ('graphic_design', 'グラフィックデザイン'),
-        ('writing', 'ライティング/コンテンツ作成'),
-        ('translation', '翻訳'),
-        ('consulting', 'オンラインコンサルティング'),
-        ('digital_marketing', 'デジタルマーケティング'),
-        ('data_analysis', 'データ分析'),
-    ]
 
     id_number = models.BigIntegerField(unique=True, default=generate_8digit_id, editable=False)
     # 委託人（client）: CustomUserのrole='client'に限定
@@ -77,12 +63,7 @@ class Task(models.Model):
     def __str__(self):
         return f"{self.id_number} - {self.get_task_type_display()}"
     # ステータス: open, in_progress, completed, canceled
-    STATUS_CHOICES = [
-        ('open', '公開中'),
-        ('in_progress', '進行中'),
-        ('completed', '完了'),
-        ('canceled', 'キャンセル'),
-    ]
+
     status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,
@@ -99,7 +80,7 @@ class BrokerRequest(models.Model):
     message = models.TextField(blank=True, null=True)
     status = models.CharField(
         max_length=20,
-        choices=[("pending", "未承認"), ("approved", "承認済み"), ("rejected", "拒否")],
+        choices=BROKER_REQUEST_STATUS_CHOICES,
         default="pending"
     )
     created_at = models.DateTimeField(auto_now_add=True)

@@ -4,6 +4,12 @@ import ClientTaskList from "./ClientTaskList";
 import ClientBrokerRequestList from "./ClientBrokerRequestList";
 import styles from "./css/ClientMyPage.module.css";
 import { UserContext } from "../../../context/UserContext";
+import { ROLE_CHOICES } from "../../../config/choices";
+
+// 将 ROLE_CHOICES 转成一个安全的 value -> label 映射
+const roleMap = Object.fromEntries(
+  ROLE_CHOICES.map(choice => [choice.value, choice.label])
+);
 
 const ClientMyPage = () => {
   const { user } = useContext(UserContext);
@@ -17,7 +23,7 @@ const ClientMyPage = () => {
       {/* 顶部用户信息 */}
       <div className={styles["top-bar"]} >
         <div>こんにちは、{user?.username || "不明"}さん</div>
-        <div>ユーザー種別: {user?.role || "不明"}</div>
+        <div>ユーザー種別: {roleMap[user?.role] || "不明"}</div>
         <button
           style={{
             marginLeft: "15px",

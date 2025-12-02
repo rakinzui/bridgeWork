@@ -8,6 +8,7 @@ from .views import (
     list_client_tasks,
     list_broker_requests,
     approve_broker_request,
+    update_task_status
 )
 
 urlpatterns = [
@@ -19,4 +20,5 @@ urlpatterns = [
     path("client/tasks/list/", list_client_tasks, name="client-task-list"),
     path("client/broker-requests/", list_broker_requests, name="client-broker-requests-list"),
     path("client/broker-requests/<int:request_id>/approve/", approve_broker_request, name="client-broker-requests-approve"),
+    path("client/tasks/update/<int:task_id>/", update_task_status, name="update_task_status"),
 ]

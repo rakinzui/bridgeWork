@@ -1,12 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './css/Register.module.css'; // 引入 CSS
-
-const roleMap = {
-  依頼人: 'client',
-  中間人: 'broker',
-  受託人: 'worker',
-};
+import { ROLE_CHOICES } from '../config/choices';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -41,7 +36,7 @@ const Register = () => {
       email: formData.email,
       password: formData.password,
       password2: formData.confirmPassword,
-      role: roleMap[formData.role],
+      role: ROLE_CHOICES.find(r => r.label === formData.role)?.value || '',
     };
 
     console.log('Sending registration data:', JSON.stringify(postData));
@@ -140,9 +135,9 @@ const Register = () => {
           onChange={handleChange}
           required
         >
-          <option value="依頼人">依頼人</option>
-          <option value="中間人">中間人</option>
-          <option value="受託人">受託人</option>
+          {ROLE_CHOICES.map(role => (
+            <option key={role.value} value={role.label}>{role.label}</option>
+          ))}
         </select>
 
         <button className={styles['register-button']} type="submit">登録</button>

@@ -56,6 +56,7 @@ def create_task(request):
 @permission_classes([IsAuthenticated])
 def list_client_tasks(request):
     tasks = Task.objects.filter(client=request.user).order_by("-created_at")
+    print("取得したタスク内容", tasks)
     serializer = TaskSerializer(tasks, many=True)
     return Response(serializer.data)
 
@@ -83,3 +84,22 @@ def approve_broker_request(request, request_id):
     task.save()
 
     return Response({"message": "承認しました"})
+
+@api_view(["PATCH"])
+@permission_classes([IsAuthenticated])
+def update_task_status(request, task_id):
+    try:
+        task = Task.objects.get(id=task_id, client=request.user)
+    except Task.DoesNotExist:
+        return Response({"detail": "タスクが見つからないか、権限がありません"}, status=status.HTTP_404_NOT_FOUND)
+    
+    if task.status != "open":
+        return Response({"detail": "このタスクの状態は更新できません"}, status=status.HTTP_400_BAD_REQUEST)
+
+    new_status = request.data.get("status")
+    if new_status not in ["completed", "canceled"]:
+        return Response({"detail": "不正なステータス"}, status=status.HTTP_400_BAD_REQUEST)
+
+    task.status = new_status
+    task.save()
+    return Response({"detail": "ステータスが更新されました", "status": task.status})

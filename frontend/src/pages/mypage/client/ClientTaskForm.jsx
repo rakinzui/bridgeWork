@@ -1,16 +1,6 @@
 import React, { useState } from "react";
 import styles from "./css/ClientMyPage.module.css";
-
-const taskTypes = {
-  software_dev: "ソフトウェア開発",
-  video_edit: "ビデオ編集",
-  graphic_design: "グラフィックデザイン",
-  writing: "ライティング/コンテンツ作成",
-  translation: "翻訳",
-  consulting: "オンラインコンサルティング",
-  digital_marketing: "デジタルマーケティング",
-  data_analysis: "データ分析"
-};
+import { TASK_TYPE_CHOICES } from "../../../config/choices";
 
 const ClientTaskForm = ({ user }) => {
   const [formData, setFormData] = useState({
@@ -18,7 +8,8 @@ const ClientTaskForm = ({ user }) => {
     task_type: "",
     description: "",
     price: "",
-    deadline: ""
+    deadline: "",
+    skill_required: ""
   });
   const [message, setMessage] = useState("");
 
@@ -53,7 +44,7 @@ const ClientTaskForm = ({ user }) => {
       });
       if (res.ok) {
         setMessage("タスクを公開しました ✅");
-        setFormData({ title: "", task_type: "", description: "", price: "", deadline: "" });
+        setFormData({ title: "", task_type: "", description: "", price: "", deadline: "", skill_required: "" });
       } else {
         const errData = await res.json();
         setMessage("公開失敗 ❌: " + JSON.stringify(errData));
@@ -80,8 +71,8 @@ const ClientTaskForm = ({ user }) => {
         <label>タスク種類</label>
         <select name="task_type" value={formData.task_type} onChange={handleChange} required>
           <option value="">選択してください</option>
-          {Object.entries(taskTypes).map(([key, label]) => (
-            <option key={key} value={key}>{label}</option>
+          {TASK_TYPE_CHOICES.map(choice => (
+            <option key={choice.value} value={choice.value}>{choice.label}</option>
           ))}
         </select>
 
@@ -93,6 +84,15 @@ const ClientTaskForm = ({ user }) => {
           required
         />
 
+        <label>応募条件</label>
+        <textarea
+          name="skill_required"
+          value={formData.skill_required}
+          onChange={handleChange}
+          required
+        />
+
+        <br></br>
         <label>報酬 (円)</label>
         <input
           type="number"
@@ -110,6 +110,7 @@ const ClientTaskForm = ({ user }) => {
           onChange={handleChange}
         />
         
+        <br></br>
         <button type="submit"  style={{
             marginLeft: "15px",
             marginTop: "15px",

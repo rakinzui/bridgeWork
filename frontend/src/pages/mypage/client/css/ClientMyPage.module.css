@@ -45,12 +45,20 @@
 .task-form-section,
 .task-list-section,
 .broker-request-section {
-  width: 100%;
   background-color: rgba(255, 255, 255, 0.1); /* 半透明效果 */
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   flex-shrink: 0;
+}
+
+.task-form-section,
+.broker-request-section {
+  width: 100%;
+}
+
+.task-list-section {
+  width: fit-content;
 }
 
 @media (max-width: 600px) {
@@ -69,4 +77,22 @@
   .broker-request-section {
     padding: 15px;
   }
+}
+
+/* Task table basic border style */
+.taskTable {
+  border-collapse: collapse;
+  border: 1px solid #333;
+  table-layout: fixed; /* 让所有列宽根据整体表格自动对齐 */
+  width: 100%; /* 统一整体宽度，使列按最大内容自动分配 */
+}
+
+.taskTable th,
+.taskTable td {
+  border: 1px solid #333;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.4);
+  font-size: 12px;
+  white-space: normal; /* 允许换行，使列宽能够统一 */
+  word-break: break-word; /* 必要时换行，确保单元格不会撑开 */
 }
