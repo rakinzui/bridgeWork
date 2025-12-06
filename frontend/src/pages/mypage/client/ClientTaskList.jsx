@@ -96,6 +96,7 @@ const ClientTaskList = () => {
               <table className={styles.taskTable}>
                 <thead>
                   <tr>
+                    <th>タスク番号</th>
                     <th>種類</th>
                     <th>タイトル</th>
                     <th>報酬</th>
@@ -111,6 +112,7 @@ const ClientTaskList = () => {
                 </thead>
                 <tbody>
                   <tr>
+                    <td>{task.id_number}</td>
                     <td>{getTaskTypeLabel(task.task_type)}</td>
                     <td>{task.title}</td>
                     <td>{task.price}円</td>
@@ -141,7 +143,7 @@ const ClientTaskList = () => {
                       )}
                     </td>
                     <td>{task.client?.username || "未設定"}</td>
-                    <td>{task.broker?.username || "未設定"}</td>
+                    <td>{task.coordinator?.username || "未設定"}</td>
                     <td>{task.worker?.username || "未設定"}</td>
                     <td>{task.title}</td>
                     <td>{task.description}</td>

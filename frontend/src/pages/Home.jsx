@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import styles from "./css/Home.module.css";
 import { UserContext } from "../context/UserContext";
-import { ROLE_CHOICES,TASK_TYPE_CHOICES,STATUS_CHOICES,BROKER_REQUEST_STATUS_CHOICES} from "../config/choices";
+import { ROLE_CHOICES,TASK_TYPE_CHOICES,STATUS_CHOICES,COORDINATOR_REQUEST_STATUS_CHOICES} from "../config/choices";
 
 const taskTypeMap = Object.fromEntries(
   TASK_TYPE_CHOICES.map(choice => [choice.value, choice.label])
@@ -74,8 +74,8 @@ const Home = () => {
 
       if (role === "client") {
         return task.client?.id === uid;
-      } else if (role === "broker") {
-        return task.broker?.id === uid || task.broker === null;
+      } else if (role === "coordinator") {
+        return task.coordinator?.id === uid || task.coordinator === null;
       } else if (role === "worker") {
         return task.worker?.id === uid || task.worker === null;
       }
@@ -89,7 +89,7 @@ const Home = () => {
         "1. 状態が『公開中』であること\n" +
         "2. 以下のいずれかに該当すること:\n" +
         "   - あなたが委託人（client）\n" +
-        "   - あなたが仲介人（broker）または仲介人が未定\n" +
+        "   - あなたが仲介人（coordinator）または仲介人が未定\n" +
         "   - あなたが受託人（worker）または受託人が未定\n\n" +
         "※ 現在の状態や担当者情報をご確認ください。"
       );
@@ -130,8 +130,8 @@ const Home = () => {
             }
             if (user.role === "client") {
               navigate("/mypage/client");
-            } else if (user.role === "broker") {
-              navigate("/mypage/broker");
+            } else if (user.role === "coordinator") {
+              navigate("/mypage/coordinator");
             } else if (user.role === "worker") {
               navigate("/mypage/worker");
             } else {
@@ -279,7 +279,7 @@ const Home = () => {
               const matchOpenable = !openableOnly || (
                 task.status === "open" && (
                   (role === "client" && task.client?.id === uid) ||
-                  ((role === "broker" || role === "worker") && (task[role]?.id === uid || task[role] === null))
+                  ((role === "coordinator" || role === "worker") && (task[role]?.id === uid || task[role] === null))
                 )
               );
 
@@ -298,8 +298,8 @@ const Home = () => {
                 <p><strong>タイトル:</strong> {task.title || "未設定"}</p>
                 <p><strong>タスク種類:</strong> {taskTypeMap[task.task_type] || task.task_type}</p>
                 <p><strong>依頼者:</strong> {task.client?.username}</p>
-                <p><strong>仲介人:</strong> {task.broker?.username || '応募なし'}</p>
-                <p><strong>受託人:</strong> {task.worker?.username || '応募なし'}</p>
+                <p><strong>仲介人:</strong> {task.coordinator?.username || '応募なし'}</p>
+                <p><strong>実行人:</strong> {task.worker?.username || '応募なし'}</p>
                 <p><strong>状態:</strong> {statusMap[task.status] || task.status}</p>
                 <p><strong>報酬:</strong> {task.price ? `${task.price} 円` : "未設定"}</p>
                 <p><strong>期限:</strong> {task.deadline || "未設定"}</p>

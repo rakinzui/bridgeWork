@@ -22,5 +22,6 @@ password:djre$$$
 
 🔸テストユーザー
 testClient
-testBroker
+testCoordinator
+testWorker
 djre$$$!!!

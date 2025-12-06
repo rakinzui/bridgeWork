@@ -3,8 +3,8 @@
 # ユーザーの役割
 ROLE_CHOICES = [
     ('client', '依頼人'),
-    ('broker', '中間人'),
-    ('worker', '受託人'),
+    ('coordinator', '仲介人'),
+    ('worker', '実行人'),
 ]
 
 # タスク種類
@@ -24,8 +24,8 @@ STATUS_CHOICES = [
 ]
 
 # 仲介リクエストステータス
-BROKER_REQUEST_STATUS_CHOICES = [
-    ("pending", "未承認"),
+COORDINATOR_REQUEST_STATUS_CHOICES = [
+    ("pending", "処理待ち"),
     ("approved", "承認済み"),
     ("rejected", "拒否"),
 ]

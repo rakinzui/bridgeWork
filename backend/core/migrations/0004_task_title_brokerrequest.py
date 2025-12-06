@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
             preserve_default=False,
         ),
         migrations.CreateModel(
-            name="BrokerRequest",
+            name="coordinatorRequest",
             fields=[
                 (
                     "id",
@@ -47,7 +47,7 @@ class Migration(migrations.Migration):
                 ),
                 ("created_at", models.DateTimeField(auto_now_add=True)),
                 (
-                    "broker",
+                    "coordinator",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
                         to=settings.AUTH_USER_MODEL,
@@ -57,7 +57,7 @@ class Migration(migrations.Migration):
                     "task",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        related_name="broker_requests",
+                        related_name="coordinator_requests",
                         to="core.task",
                     ),
                 ),

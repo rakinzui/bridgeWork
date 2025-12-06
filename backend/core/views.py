@@ -4,8 +4,8 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny,IsAuthenticated
 from rest_framework.response import Response
-from .serializers import RegisterSerializer,TaskSerializer,UserSerializer,BrokerRequestSerializer
-from .models import Task,BrokerRequest
+from .serializers import RegisterSerializer,TaskSerializer,UserSerializer,coordinatorRequestSerializer
+from .models import Task,coordinatorRequest
 from rest_framework import generics
 from rest_framework.views import APIView
 
@@ -62,28 +62,59 @@ def list_client_tasks(request):
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
-def list_broker_requests(request, task_id):
+def list_coordinator_requests(request, task_id):
     task = get_object_or_404(Task, id=task_id, client=request.user)
-    requests = BrokerRequest.objects.filter(task=task)
-    serializer = BrokerRequestSerializer(requests, many=True)
+    requests = coordinatorRequest.objects.filter(task=task)
+    serializer = coordinatorRequestSerializer(requests, many=True)
     return Response(serializer.data)
 
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
-def approve_broker_request(request, request_id):
-    broker_request = get_object_or_404(BrokerRequest, id=request_id)
-    task = broker_request.task
+def approve_coordinator_request(request, request_id):
+    coordinator_request = get_object_or_404(coordinatorRequest, id=request_id)
+    task = coordinator_request.task
 
     if task.client != request.user:
         return Response({"error": "権限がありません"}, status=403)
 
-    broker_request.status = "approved"
-    broker_request.save()
+    coordinator_request.status = "approved"
+    coordinator_request.save()
 
-    task.broker = broker_request.broker
+    task.coordinator = coordinator_request.coordinator
     task.save()
 
     return Response({"message": "承認しました"})
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def apply_coordinator(request, task_id):
+    task = get_object_or_404(Task, id=task_id)
+    user = request.user
+
+    from .choices import COORDINATOR_REQUEST_STATUS_CHOICES
+    try:
+        # Check if already applied
+        existing_request = coordinatorRequest.objects.filter(task=task, coordinator=user).first()
+        if existing_request:
+            return Response({"error": "すでに応募済みです"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Get initial status safely
+        initial_status = "pending"
+
+        br = coordinatorRequest.objects.create(
+            task=task,
+            coordinator=user,
+            message=request.data.get("message", ""),
+            status=initial_status
+        )
+    except Exception as e:
+        return Response({"error": f"応募処理中にエラーが発生しました: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    return Response({
+        "message": "応募完了",
+        "coordinator_username": user.username,
+        "request_id": br.id
+    }, status=status.HTTP_201_CREATED)
 
 @api_view(["PATCH"])
 @permission_classes([IsAuthenticated])
@@ -103,3 +134,64 @@ def update_task_status(request, task_id):
     task.status = new_status
     task.save()
     return Response({"detail": "ステータスが更新されました", "status": task.status})
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def list_coordinator_requests(request):
+    """
+    依頼者用：获取自己发布的所有任务对应的仲介申请
+    """
+    user = request.user
+
+    # 获取依赖者自己的任务
+    tasks = Task.objects.filter(client=user)
+
+    # 获取这些任务对应的所有 coordinatorRequest，并预加载 task 和 coordinator
+    coordinator_requests = coordinatorRequest.objects.filter(task__in=tasks).select_related('task', 'coordinator')
+
+    # 序列化
+    serializer = coordinatorRequestSerializer(coordinator_requests, many=True)
+    data = serializer.data
+
+    # append task title and id_number
+    for item, br in zip(data, coordinator_requests):
+        item["task_title"] = br.task.title
+        item["task_id_number"] = br.task.id_number
+
+    return Response(data)
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def approve_coordinator_request(request, request_id):
+    """仲介者申請を承認する"""
+    coordinator_request = get_object_or_404(coordinatorRequest, id=request_id)
+
+    # 依頼者本人しか承認できないようチェック
+    if coordinator_request.task.client != request.user:
+        return Response({"error": "権限がありません"}, status=403)
+
+    # 状態更新
+    coordinator_request.status = "approved"
+    # タスクに仲介人をセット
+    task = coordinator_request.task
+    task.coordinator = coordinator_request.coordinator
+    task.save()
+    coordinator_request.save()
+
+    return Response({"message": "承認しました"})
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def reject_coordinator_request(request, request_id):
+    """仲介者申請を拒否する"""
+    coordinator_request = get_object_or_404(coordinatorRequest, id=request_id)
+
+    # 依頼者本人しか拒否できないようチェック
+    if coordinator_request.task.client != request.user:
+        return Response({"error": "権限がありません"}, status=403)
+
+    coordinator_request.status = "rejected"
+    coordinator_request.save()
+
+    return Response({"message": "拒否しました"})

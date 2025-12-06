@@ -25,10 +25,10 @@ def run():
     for i in range(1, 6):
         user, created = CustomUser.objects.get_or_create(username=f'client{i}', defaults={'role':'client'})
         clients.append(user)
-    brokers = []
+    coordinators = []
     for i in range(1, 4):
-        user, created = CustomUser.objects.get_or_create(username=f'broker{i}', defaults={'role':'broker'})
-        brokers.append(user)
+        user, created = CustomUser.objects.get_or_create(username=f'coordinator{i}', defaults={'role':'coordinator'})
+        coordinators.append(user)
     workers = []
     for i in range(1, 6):
         user, created = CustomUser.objects.get_or_create(username=f'worker{i}', defaults={'role':'worker'})
@@ -42,7 +42,7 @@ def run():
     for i in range(30):
         Task.objects.create(
             client=random.choice(clients),
-            broker=random.choice(brokers + [None]),
+            coordinator=random.choice(coordinators + [None]),
             worker=random.choice(workers + [None]),
             task_type=random.choice(task_types),
             price=round(random.uniform(5000, 50000), 2),

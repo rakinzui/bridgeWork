@@ -6,9 +6,11 @@ from .views import (
     MeView,
     create_task,
     list_client_tasks,
-    list_broker_requests,
-    approve_broker_request,
-    update_task_status
+    list_coordinator_requests,
+    approve_coordinator_request,
+    update_task_status,
+    apply_coordinator,
+    reject_coordinator_request,
 )
 
 urlpatterns = [
@@ -18,7 +20,9 @@ urlpatterns = [
     path("me/", MeView.as_view(), name="me"),
     path("client/tasks/create/", create_task, name="client-task-create"),
     path("client/tasks/list/", list_client_tasks, name="client-task-list"),
-    path("client/broker-requests/", list_broker_requests, name="client-broker-requests-list"),
-    path("client/broker-requests/<int:request_id>/approve/", approve_broker_request, name="client-broker-requests-approve"),
+    path("client/coordinator-requests/", list_coordinator_requests, name="client-coordinator-requests-list"),
+    path("client/coordinator-requests/<int:request_id>/approve/", approve_coordinator_request, name="client-coordinator-requests-approve"),
+    path("coordinator/tasks/<int:task_id>/apply/", apply_coordinator, name="coordinator-apply"),
+    path("client/coordinator-requests/<int:request_id>/reject/", reject_coordinator_request, name="client-coordinator-requests-reject"),
     path("client/tasks/update/<int:task_id>/", update_task_status, name="update_task_status"),
 ]

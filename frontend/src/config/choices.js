@@ -1,7 +1,7 @@
 export const ROLE_CHOICES = [
   { value: 'client', label: '依頼人' },
-  { value: 'broker', label: '中間人' },
-  { value: 'worker', label: '受託人' },
+  { value: 'coordinator', label: '仲介人' },
+  { value: 'worker', label: '実行人'},
 ];
 
 export const TASK_TYPE_CHOICES = [
@@ -18,8 +18,8 @@ export const STATUS_CHOICES = [
   { value: 'canceled', label: '取り下げ' },
 ];
 
-export const BROKER_REQUEST_STATUS_CHOICES = [
-  { value: 'pending', label: '未承認' },
+export const COORDINATOR_REQUEST_STATUS_CHOICES = [
+  { value: 'pending', label: '処理待ち' },
   { value: 'approved', label: '承認済み' },
   { value: 'rejected', label: '拒否' },
 ];

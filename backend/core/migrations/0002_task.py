@@ -71,13 +71,13 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    "broker",
+                    "coordinator",
                     models.ForeignKey(
                         blank=True,
-                        limit_choices_to={"role": "broker"},
+                        limit_choices_to={"role": "coordinator"},
                         null=True,
                         on_delete=django.db.models.deletion.SET_NULL,
-                        related_name="broker_tasks",
+                        related_name="coordinator_tasks",
                         to=settings.AUTH_USER_MODEL,
                         verbose_name="中間人",
                     ),

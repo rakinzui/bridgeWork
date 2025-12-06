@@ -102,7 +102,7 @@ class Migration(migrations.Migration):
                     models.CharField(
                         choices=[
                             ("client", "依頼人"),
-                            ("broker", "中間人"),
+                            ("coordinator", "中間人"),
                             ("worker", "受託人"),
                         ],
                         default="client",

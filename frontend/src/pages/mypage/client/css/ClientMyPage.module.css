@@ -44,7 +44,7 @@
 /* 各个模块 */
 .task-form-section,
 .task-list-section,
-.broker-request-section {
+.coordinator-request-section {
   background-color: rgba(255, 255, 255, 0.1); /* 半透明效果 */
   padding: 20px;
   border-radius: 12px;
@@ -53,7 +53,7 @@
 }
 
 .task-form-section,
-.broker-request-section {
+.coordinator-request-section {
   width: 100%;
 }
 
@@ -74,7 +74,7 @@
   }
   .task-form-section,
   .task-list-section,
-  .broker-request-section {
+  .coordinator-request-section {
     padding: 15px;
   }
 }

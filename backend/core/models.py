@@ -3,7 +3,7 @@ from django.db import models
 
 import random
 from django.db import models
-from .choices import (ROLE_CHOICES, TASK_TYPE_CHOICES, STATUS_CHOICES, BROKER_REQUEST_STATUS_CHOICES)
+from .choices import (ROLE_CHOICES, TASK_TYPE_CHOICES, STATUS_CHOICES, COORDINATOR_REQUEST_STATUS_CHOICES)
 
 def generate_8digit_id():
     """生成唯一8位数字ID"""
@@ -30,15 +30,15 @@ class Task(models.Model):
         limit_choices_to={'role': 'client'},
         verbose_name='依頼人'
     )
-    # 中間人（broker）: CustomUserのrole='broker'に限定、null許可
-    broker = models.ForeignKey(
+    # 中間人（coordinator）: CustomUserのrole='coordinator'に限定、null許可
+    coordinator = models.ForeignKey(
         'CustomUser',
         on_delete=models.SET_NULL,
-        related_name='broker_tasks',
-        limit_choices_to={'role': 'broker'},
+        related_name='coordinator_tasks',
+        limit_choices_to={'role': 'coordinator'},
         null=True,
         blank=True,
-        verbose_name='中間人'
+        verbose_name='仲介人'
     )
     # 受託人（worker）: CustomUserのrole='worker'に限定、null許可
     worker = models.ForeignKey(
@@ -48,7 +48,7 @@ class Task(models.Model):
         limit_choices_to={'role': 'worker'},
         null=True,
         blank=True,
-        verbose_name='受託人'
+        verbose_name='実行人'
     )
     title = models.CharField(max_length=255, verbose_name="タイトル")
     task_type = models.CharField(max_length=30, choices=TASK_TYPE_CHOICES)
@@ -74,13 +74,13 @@ class Task(models.Model):
     class Meta:
         db_table = 'task'
         
-class BrokerRequest(models.Model):
-    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name="broker_requests")
-    broker = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+class coordinatorRequest(models.Model):
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name="coordinator_requests")
+    coordinator = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     message = models.TextField(blank=True, null=True)
     status = models.CharField(
         max_length=20,
-        choices=BROKER_REQUEST_STATUS_CHOICES,
+        choices=COORDINATOR_REQUEST_STATUS_CHOICES,
         default="pending"
     )
     created_at = models.DateTimeField(auto_now_add=True)

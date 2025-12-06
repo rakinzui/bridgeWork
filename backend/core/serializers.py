@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser,Task,BrokerRequest
+from .models import CustomUser,Task,coordinatorRequest
 
 class RegisterSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(write_only=True)
@@ -28,22 +28,16 @@ class UserSerializer(serializers.ModelSerializer):
 
 class TaskSerializer(serializers.ModelSerializer):
     client = UserSerializer(read_only=True)
-    client_name = serializers.CharField(source="client.username", read_only=True)
-    broker_name = serializers.CharField(source="broker.username", read_only=True)
-    worker_name = serializers.CharField(source="worker.username", read_only=True)
-    worker = serializers.PrimaryKeyRelatedField(
-        queryset=CustomUser.objects.all(),
-        required=False,
-        allow_null=True
-    )
+    coordinator = UserSerializer(read_only=True)
+    worker = UserSerializer(read_only=True)
 
     class Meta:
         model = Task
         fields = "__all__"
         
-class BrokerRequestSerializer(serializers.ModelSerializer):
-    broker_name = serializers.CharField(source="broker.username", read_only=True)
+class coordinatorRequestSerializer(serializers.ModelSerializer):
+    coordinator_name = serializers.CharField(source="coordinator.username", read_only=True)
 
     class Meta:
-        model = BrokerRequest
+        model = coordinatorRequest
         fields = "__all__"

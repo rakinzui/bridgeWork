@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import ClientTaskForm from "./ClientTaskForm";
 import ClientTaskList from "./ClientTaskList";
-import ClientBrokerRequestList from "./ClientBrokerRequestList";
+import ClientCoordinatorRequestList from "./ClientCoordinatorRequestList";
 import styles from "./css/ClientMyPage.module.css";
 import { UserContext } from "../../../context/UserContext";
 import { ROLE_CHOICES } from "../../../config/choices";
@@ -55,8 +55,8 @@ const ClientMyPage = () => {
         </div>
 
         {/* 中间人申请列表 */}
-        <div className={styles["broker-request-section"]}>
-          <ClientBrokerRequestList user={user} />
+        <div className={styles["coordinator-request-section"]}>
+          <ClientCoordinatorRequestList user={user} />
         </div>
       </div>
     </div>
