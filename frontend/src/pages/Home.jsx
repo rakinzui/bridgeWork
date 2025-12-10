@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import styles from "./css/Home.module.css";
 import { UserContext } from "../context/UserContext";
-import { ROLE_CHOICES,TASK_TYPE_CHOICES,STATUS_CHOICES,COORDINATOR_REQUEST_STATUS_CHOICES} from "../config/choices";
+import { ROLE_CHOICES,TASK_TYPE_CHOICES,STATUS_CHOICES,REQUEST_STATUS_CHOICES} from "../config/choices";
 
 const taskTypeMap = Object.fromEntries(
   TASK_TYPE_CHOICES.map(choice => [choice.value, choice.label])

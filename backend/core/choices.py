@@ -24,7 +24,7 @@ STATUS_CHOICES = [
 ]
 
 # 仲介リクエストステータス
-COORDINATOR_REQUEST_STATUS_CHOICES = [
+REQUEST_STATUS_CHOICES = [
     ("pending", "処理待ち"),
     ("approved", "承認済み"),
     ("rejected", "拒否"),

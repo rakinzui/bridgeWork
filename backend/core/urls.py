@@ -11,6 +11,10 @@ from .views import (
     update_task_status,
     apply_coordinator,
     reject_coordinator_request,
+    coordinator_my_tasks,
+    coordinator_my_applications,
+    list_worker_requests
+    
 )
 
 urlpatterns = [
@@ -25,4 +29,7 @@ urlpatterns = [
     path("coordinator/tasks/<int:task_id>/apply/", apply_coordinator, name="coordinator-apply"),
     path("client/coordinator-requests/<int:request_id>/reject/", reject_coordinator_request, name="client-coordinator-requests-reject"),
     path("client/tasks/update/<int:task_id>/", update_task_status, name="update_task_status"),
+    path("coordinator/tasks/", coordinator_my_tasks, name="coordinator-my-tasks"),
+    path("coordinator/applications/", coordinator_my_applications, name="coordinator-my-applications"),
+    path("coordinator/worker-requests/", list_worker_requests, name="coordinator-worker-requests"),
 ]

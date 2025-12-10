@@ -3,7 +3,7 @@ from django.db import models
 
 import random
 from django.db import models
-from .choices import (ROLE_CHOICES, TASK_TYPE_CHOICES, STATUS_CHOICES, COORDINATOR_REQUEST_STATUS_CHOICES)
+from .choices import (ROLE_CHOICES, TASK_TYPE_CHOICES, STATUS_CHOICES, REQUEST_STATUS_CHOICES)
 
 def generate_8digit_id():
     """生成唯一8位数字ID"""
@@ -80,7 +80,29 @@ class coordinatorRequest(models.Model):
     message = models.TextField(blank=True, null=True)
     status = models.CharField(
         max_length=20,
-        choices=COORDINATOR_REQUEST_STATUS_CHOICES,
+        choices=REQUEST_STATUS_CHOICES,
         default="pending"
     )
     created_at = models.DateTimeField(auto_now_add=True)
+    
+
+class workerRequest(models.Model):
+    task = models.ForeignKey(
+        Task,
+        on_delete=models.CASCADE,
+        related_name="worker_requests"
+    )
+    worker = models.ForeignKey(
+        CustomUser,
+        on_delete=models.CASCADE
+    )
+    message = models.TextField(blank=True, null=True)
+    status = models.CharField(
+        max_length=20,
+        choices=REQUEST_STATUS_CHOICES,  # ★実行人応募も同じ pending/approved/rejected
+        default="pending"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"WorkerRequest #{self.id} - Task {self.task.id_number}"

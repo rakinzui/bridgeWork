@@ -18,7 +18,7 @@ export const STATUS_CHOICES = [
   { value: 'canceled', label: '取り下げ' },
 ];
 
-export const COORDINATOR_REQUEST_STATUS_CHOICES = [
+export const REQUEST_STATUS_CHOICES = [
   { value: 'pending', label: '処理待ち' },
   { value: 'approved', label: '承認済み' },
   { value: 'rejected', label: '拒否' },

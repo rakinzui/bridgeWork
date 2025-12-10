@@ -91,7 +91,7 @@ def apply_coordinator(request, task_id):
     task = get_object_or_404(Task, id=task_id)
     user = request.user
 
-    from .choices import COORDINATOR_REQUEST_STATUS_CHOICES
+    from .choices import REQUEST_STATUS_CHOICES
     try:
         # Check if already applied
         existing_request = coordinatorRequest.objects.filter(task=task, coordinator=user).first()
@@ -195,3 +195,51 @@ def reject_coordinator_request(request, request_id):
     coordinator_request.save()
 
     return Response({"message": "拒否しました"})
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def coordinator_my_tasks(request):
+    """仲介人用：自分が担当するタスク一覧"""
+    user = request.user
+    tasks = Task.objects.filter(coordinator=user).order_by("-updated_at")
+    serializer = TaskSerializer(tasks, many=True)
+    data = serializer.data
+    
+    for item, task in zip(data, tasks):
+        item["client_username"] = task.client.username
+        item["client_id"] = task.client.id
+    
+    
+    return Response(serializer.data)
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def coordinator_my_applications(request):
+    """仲介人用：自分が応募した仲介申請一覧"""
+    user = request.user
+    applications = coordinatorRequest.objects.filter(coordinator=user).select_related("task")
+    serializer = coordinatorRequestSerializer(applications, many=True)
+
+    data = serializer.data
+    for item, br in zip(data, applications):
+        item["task_title"] = br.task.title
+        item["task_id_number"] = br.task.id_number
+        item["client_username"] = br.task.client.username
+    print("仲介人の応募一覧データ:", data)
+    return Response(data)
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def list_worker_requests(request):
+    """仲介人用：実行人からの応募一覧（仲介人が担当するタスク）"""
+    user = request.user
+
+    # 仲介人が担当するタスクを取得
+    tasks = Task.objects.filter(coordinator=user)
+
+    # 実行人の応募リクエスト（workerRequest）を取得 ※まだモデルは無いので空処理
+    worker_requests = []  # TODO: workerRequest 実装後に置き換え
+
+    return Response(worker_requests)

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser,Task,coordinatorRequest
+from .models import CustomUser, Task, coordinatorRequest, workerRequest
 
 class RegisterSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(write_only=True)
@@ -40,4 +40,12 @@ class coordinatorRequestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = coordinatorRequest
+        fields = "__all__"
+
+
+class workerRequestSerializer(serializers.ModelSerializer):
+    worker_name = serializers.CharField(source="worker.username", read_only=True)
+
+    class Meta:
+        model = workerRequest
         fields = "__all__"

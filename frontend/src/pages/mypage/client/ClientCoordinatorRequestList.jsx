@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import styles from "./css/ClientMyPage.module.css";
-import { COORDINATOR_REQUEST_STATUS_CHOICES } from "../../../config/choices";
+import { REQUEST_STATUS_CHOICES } from "../../../config/choices";
 
 const ClientCoordinatorRequestList = () => {
   const [requests, setRequests] = useState([]);
@@ -107,7 +107,7 @@ const ClientCoordinatorRequestList = () => {
                 <td>{req.coordinator_name}</td>
                 <td>{req.message}</td>
                 <td>
-                    {COORDINATOR_REQUEST_STATUS_CHOICES.find(c => c.value === req.status)?.label}
+                    {REQUEST_STATUS_CHOICES.find(c => c.value === req.status)?.label}
                 </td>
                 <td>
                   {(req.status === "pending" || req.status === null) ? (
