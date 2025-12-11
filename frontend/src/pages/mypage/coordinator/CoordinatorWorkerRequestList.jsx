@@ -93,20 +93,24 @@ const CoordinatorWorkerRequestList = () => {
                 <td>{statusMap[req.status]}</td>
 
                 <td>
-                  <button
-                    style={{ backgroundColor: "green", color: "white" }}
-                    disabled={req.status !== "pending"}
-                    onClick={() => handleApprove(req.id)}
-                  >
-                    承認
-                  </button>
-                         <button
-                    style={{ backgroundColor: "red" , color: "white", marginLeft: "8px" }}
-                    disabled={req.status !== "pending"}
-                    onClick={() => handleReject(req.id)}
-                  >
-                    拒否
-                  </button>     
+                  {req.status === "pending" ? (
+                    <>
+                      <button
+                        style={{ backgroundColor: "green", color: "white" }}
+                        onClick={() => handleApprove(req.id)}
+                      >
+                        承認
+                      </button>
+                      <button
+                        style={{ backgroundColor: "red", color: "white", marginLeft: "8px" }}
+                        onClick={() => handleReject(req.id)}
+                      >
+                        拒否
+                      </button>
+                    </>
+                  ) : (
+                    <span>-</span>
+                  )}
                 </td>
               </tr>
             ))}

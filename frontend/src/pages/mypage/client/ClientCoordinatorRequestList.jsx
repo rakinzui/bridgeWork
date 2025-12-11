@@ -126,7 +126,7 @@ const ClientCoordinatorRequestList = () => {
                       </button>
                     </>
                   ) : (
-                    <span style={{ color: "#555" }}>操作不可</span>
+                    <span style={{ color: "#555" }}>-</span>
                   )}
                 </td>
               </tr>
