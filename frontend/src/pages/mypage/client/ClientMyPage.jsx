@@ -1,8 +1,8 @@
 import React, { useContext } from "react";
 import ClientTaskForm from "./ClientTaskForm";
 import ClientTaskList from "./ClientTaskList";
+import styles from "../../css/Mypage.module.css";
 import ClientCoordinatorRequestList from "./ClientCoordinatorRequestList";
-import styles from "./css/ClientMyPage.module.css";
 import { UserContext } from "../../../context/UserContext";
 import { ROLE_CHOICES } from "../../../config/choices";
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import styles from "./css/CoordinatorMyPage.module.css";
+import styles from "../../css/Mypage.module.css";
 import {REQUEST_STATUS_CHOICES}  from "../../../config/choices";
 
 const CoordinatorWorkerRequestList = () => {
@@ -11,7 +11,13 @@ const CoordinatorWorkerRequestList = () => {
   useEffect(() => {
     const fetchRequests = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/api/coordinator/worker-requests/");
+        const token = localStorage.getItem("access");
+        const response = await axios.get("http://127.0.0.1:8000/api/coordinator/worker-requests/", {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        console.log("取得した実行人応募一覧データ:", response.data);
         setRequests(response.data);
       } catch (error) {
         console.error("実行人応募一覧の取得失敗:", error);
@@ -26,9 +32,13 @@ const CoordinatorWorkerRequestList = () => {
 
   const handleApprove = async (id) => {
     if (!confirm("この実行人の応募を承認しますか？")) return;
-
+    const token = localStorage.getItem("access");
     try {
-      await axios.post(`/api/coordinator/worker-requests/${id}/approve/`);
+      await axios.post(`http://127.0.0.1:8000/api/coordinator/worker-requests/${id}/approve/`, {}, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       alert("承認しました！");
       setRequests((prev) =>
         prev.map((r) =>
@@ -57,11 +67,11 @@ const CoordinatorWorkerRequestList = () => {
   };
 
   return (
-    <div className={styles["request-list-section"]}>
+    <div className={styles["task-list-section"]}>
       <h2 className={styles["title"]}>実行人応募一覧</h2>
 
       {requests.length > 0 ? (
-        <table className={styles["request-table"]}>
+        <table className={styles["taskTable"]}>
           <thead>
             <tr>
               <th>タスク識別番号</th>
@@ -69,7 +79,7 @@ const CoordinatorWorkerRequestList = () => {
               <th>実行人</th>
               <th>申請日</th>
               <th>状態</th>
-              <th colSpan="3">操作</th>
+              <th>操作</th>
             </tr>
           </thead>
 
@@ -84,30 +94,19 @@ const CoordinatorWorkerRequestList = () => {
 
                 <td>
                   <button
-                    className={styles["approve-button"]}
+                    style={{ backgroundColor: "green", color: "white" }}
                     disabled={req.status !== "pending"}
                     onClick={() => handleApprove(req.id)}
                   >
                     承認
                   </button>
-                </td>
-
-                <td>
-                  <button
-                    className={styles["reject-button"]}
+                         <button
+                    style={{ backgroundColor: "red" , color: "white", marginLeft: "8px" }}
                     disabled={req.status !== "pending"}
                     onClick={() => handleReject(req.id)}
                   >
                     拒否
-                  </button>
-                </td>
-
-                <td>
-                  <button
-                    onClick={() => navigate(`/task/${req.task_id}`)}
-                  >
-                    詳細
-                  </button>
+                  </button>     
                 </td>
               </tr>
             ))}

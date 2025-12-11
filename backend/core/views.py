@@ -4,8 +4,8 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny,IsAuthenticated
 from rest_framework.response import Response
-from .serializers import RegisterSerializer,TaskSerializer,UserSerializer,coordinatorRequestSerializer
-from .models import Task,coordinatorRequest
+from .serializers import RegisterSerializer,TaskSerializer,UserSerializer,coordinatorRequestSerializer,workerRequestSerializer
+from .models import Task,coordinatorRequest,workerRequest
 from rest_framework import generics
 from rest_framework.views import APIView
 
@@ -91,30 +91,22 @@ def apply_coordinator(request, task_id):
     task = get_object_or_404(Task, id=task_id)
     user = request.user
 
-    from .choices import REQUEST_STATUS_CHOICES
-    try:
-        # Check if already applied
-        existing_request = coordinatorRequest.objects.filter(task=task, coordinator=user).first()
-        if existing_request:
-            return Response({"error": "すでに応募済みです"}, status=status.HTTP_400_BAD_REQUEST)
+    # すでに応募しているか確認
+    existing_request = coordinatorRequest.objects.filter(task=task, coordinator=user).first()
+    if existing_request:
+        return Response({"detail": "すでに仲介者として応募済みです"}, status=400)
 
-        # Get initial status safely
-        initial_status = "pending"
-
-        br = coordinatorRequest.objects.create(
-            task=task,
-            coordinator=user,
-            message=request.data.get("message", ""),
-            status=initial_status
-        )
-    except Exception as e:
-        return Response({"error": f"応募処理中にエラーが発生しました: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    cr = coordinatorRequest.objects.create(
+        task=task,
+        coordinator=user,
+        message=request.data.get("message", ""),
+        status="pending"
+    )
 
     return Response({
-        "message": "応募完了",
-        "coordinator_username": user.username,
-        "request_id": br.id
-    }, status=status.HTTP_201_CREATED)
+        "detail": "仲介者として応募が完了しました",
+        "request_id": cr.id
+    }, status=201)
 
 @api_view(["PATCH"])
 @permission_classes([IsAuthenticated])
@@ -212,6 +204,24 @@ def coordinator_my_tasks(request):
     
     return Response(serializer.data)
 
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def worker_my_tasks(request):
+    """実行人用：自分が担当するタスク一覧"""
+    user = request.user
+    print("実行人ユーザー情報", user)
+    tasks = Task.objects.filter(worker=user).order_by("-updated_at")
+    serializer = TaskSerializer(tasks, many=True)
+    data = serializer.data
+
+    for item, task in zip(data, tasks):
+        item["client_username"] = task.client.username
+        item["client_id"] = task.client.id
+        item["coordinator_username"] = task.coordinator.username if task.coordinator else None
+        
+    print("実行人の担当タスク一覧データ:", data)
+
+    return Response(data)
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
@@ -236,10 +246,94 @@ def list_worker_requests(request):
     """仲介人用：実行人からの応募一覧（仲介人が担当するタスク）"""
     user = request.user
 
-    # 仲介人が担当するタスクを取得
+    # 仲介人が担当するタスク
     tasks = Task.objects.filter(coordinator=user)
 
-    # 実行人の応募リクエスト（workerRequest）を取得 ※まだモデルは無いので空処理
-    worker_requests = []  # TODO: workerRequest 実装後に置き換え
+    # それらのタスクに対する workerRequest を取得
+    worker_requests = workerRequest.objects.filter(task__in=tasks).select_related("task", "worker")
 
-    return Response(worker_requests)
+    serializer = workerRequestSerializer(worker_requests, many=True)
+    data = serializer.data
+
+    # task title, id_number, worker username を追加
+    for item, wr in zip(data, worker_requests):
+        item["task_title"] = wr.task.title
+        item["task_id_number"] = wr.task.id_number
+        item["worker_username"] = wr.worker.username
+        item["client_username"] = wr.task.client.username
+
+    return Response(data)
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def apply_worker(request, task_id):
+    task = get_object_or_404(Task, id=task_id)
+    user = request.user
+
+    # すでに応募しているか確認
+    existing = workerRequest.objects.filter(task=task, worker=user).first()
+    if existing:
+        return Response({"detail": "すでに実行人として応募済みです"}, status=400)
+
+    wr = workerRequest.objects.create(
+        task=task,
+        worker=user,
+        message=request.data.get("message", ""),
+        status="pending"
+    )
+
+    return Response({
+        "detail": "実行人として応募が完了しました",
+        "request_id": wr.id
+    }, status=201)
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def approve_worker_request(request, request_id):
+    """仲介人：実行人応募を承認する"""
+    wr = get_object_or_404(workerRequest, id=request_id)
+
+    if wr.task.coordinator != request.user:
+        return Response({"error": "権限がありません"}, status=403)
+
+    wr.status = "approved"
+    wr.save()
+
+    task = wr.task
+    task.worker = wr.worker
+    task.save()
+
+    return Response({"message": "承認しました"})
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def reject_worker_request(request, request_id):
+    """仲介人：実行人応募を拒否する"""
+    wr = get_object_or_404(workerRequest, id=request_id)
+
+    if wr.task.coordinator != request.user:
+        return Response({"error": "権限がありません"}, status=403)
+
+    wr.status = "rejected"
+    wr.save()
+
+    return Response({"message": "拒否しました"})
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def worker_my_applications(request):
+    """実行人用：自分が応募した実行人申請一覧"""
+    user = request.user
+    applications = workerRequest.objects.filter(worker=user).select_related("task")
+    serializer = workerRequestSerializer(applications, many=True)
+
+    data = serializer.data
+    for item, br in zip(data, applications):
+        item["task_title"] = br.task.title
+        item["task_id_number"] = br.task.id_number
+        item["coordinator_username"] = (
+            br.task.coordinator.username if br.task.coordinator else None
+        )
+        item["client_username"] = br.task.client.username
+
+    return Response(data)

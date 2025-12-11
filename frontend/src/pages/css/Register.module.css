@@ -3,17 +3,26 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  background: linear-gradient(135deg, rgba(230, 251, 255, 0.9), rgba(185, 241, 240, 0.9));
+  padding-top: 300px;
+  background-image: url('../../assets/img/backgroud.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   width: 100vw;
   margin: 0;
-  padding: 0;
   transition: background 1s ease-in-out;
   animation: fadeIn 1.2s ease-in;
+}
+
+@media (max-width: 420px) {
+  .register-container {
+    padding-top: 140px;
+  }
 }
 
 .register-container h1,

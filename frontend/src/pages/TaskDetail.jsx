@@ -35,6 +35,8 @@ const TaskDetail = () => {
   const handlecoordinatorApply = async (message) => {
     if (!window.confirm("仲介人として応募しますか？")) return;
 
+    const token = localStorage.getItem("access");
+
     try {
       const response = await axios.post(
         `/coordinator/tasks/${id}/apply/`,
@@ -42,36 +44,38 @@ const TaskDetail = () => {
         {
           baseURL: "http://127.0.0.1:8000/api/",
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("access")}`
+            Authorization: `Bearer ${token}`
           }
         }
       );
 
-      alert("仲介人として応募しました！");
+      alert(response.data?.detail || "応募が完了しました");
     } catch (error) {
       console.error("coordinator apply failed:", error);
-      alert("応募に失敗しました。\n権限がないか、すでに応募済みの可能性があります。");
+      alert(error.response?.data?.detail || "応募に失敗しました");
     }
   };
 
   const handleWorkerApply = async (message) => {
     if (!window.confirm("実行人として応募しますか？")) return;
 
+    const token = localStorage.getItem("access");
+
     try {
-      await axios.post(
+      const response = await axios.post(
         `/worker/tasks/${id}/apply/`,
         { message },
         {
           baseURL: "http://127.0.0.1:8000/api/",
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("access")}`
+            Authorization: `Bearer ${token}`
           }
         }
       );
-      alert("実行人として応募しました！");
+      alert(response.data?.detail || "応募が完了しました");
     } catch (error) {
       console.error("worker apply failed:", error);
-      alert("応募に失敗しました。");
+      alert(error.response?.data?.detail || "応募に失敗しました");
     }
   };
 

@@ -36,7 +36,7 @@ function Login(){
 
     return(
        <div className={styles["login-container"]}>
-         <h1>ユーザーログイン</h1>
+         <h1 style={{ color: "white" }}>ユーザーログイン</h1>
          <form onSubmit={handleLogin}>
             <input
                 className={styles["login-input"]}

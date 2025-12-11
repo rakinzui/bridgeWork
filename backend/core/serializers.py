@@ -37,15 +37,38 @@ class TaskSerializer(serializers.ModelSerializer):
         
 class coordinatorRequestSerializer(serializers.ModelSerializer):
     coordinator_name = serializers.CharField(source="coordinator.username", read_only=True)
+    task_title = serializers.CharField(source="task.title", read_only=True)
+    task_id_number = serializers.CharField(source="task.id_number", read_only=True)
 
     class Meta:
         model = coordinatorRequest
-        fields = "__all__"
+        fields = [
+            "id",
+            "task",
+            "coordinator",
+            "status",
+            "created_at",
+            "coordinator_name",
+            "message",
+            "task_title",
+            "task_id_number",
+        ]
 
 
 class workerRequestSerializer(serializers.ModelSerializer):
     worker_name = serializers.CharField(source="worker.username", read_only=True)
+    task_title = serializers.CharField(source="task.title", read_only=True)
+    task_id_number = serializers.CharField(source="task.id_number", read_only=True)
 
     class Meta:
         model = workerRequest
-        fields = "__all__"
+        fields = [
+            "id",
+            "task",
+            "worker",
+            "status",
+            "created_at",
+            "worker_name",
+            "task_title",
+            "task_id_number",
+        ]

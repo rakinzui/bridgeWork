@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import styles from "./css/ClientMyPage.module.css";
+import styles from "../../css/Mypage.module.css";
 import { TASK_TYPE_CHOICES } from "../../../config/choices";
 
 const ClientTaskForm = ({ user }) => {

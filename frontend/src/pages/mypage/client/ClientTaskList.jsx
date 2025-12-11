@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import styles from "./css/ClientMyPage.module.css";
+import styles from "../../css/Mypage.module.css";
 import { TASK_TYPE_CHOICES, STATUS_CHOICES } from "../../../config/choices";
 
 // 创建 value -> label 映射

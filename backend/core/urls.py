@@ -13,7 +13,11 @@ from .views import (
     reject_coordinator_request,
     coordinator_my_tasks,
     coordinator_my_applications,
-    list_worker_requests
+    list_worker_requests,
+    worker_my_tasks,
+    worker_my_applications,
+    apply_worker,
+    approve_worker_request,
     
 )
 
@@ -32,4 +36,8 @@ urlpatterns = [
     path("coordinator/tasks/", coordinator_my_tasks, name="coordinator-my-tasks"),
     path("coordinator/applications/", coordinator_my_applications, name="coordinator-my-applications"),
     path("coordinator/worker-requests/", list_worker_requests, name="coordinator-worker-requests"),
+    path("worker/tasks/", worker_my_tasks, name="worker-my-tasks"),
+    path("worker/applications/", worker_my_applications, name="worker-my-applications"),
+    path("worker/tasks/<int:task_id>/apply/", apply_worker, name="worker-apply"),
+    path("coordinator/worker-requests/<int:request_id>/approve/", approve_worker_request, name="coordinator-worker-requests-approve"),
 ]

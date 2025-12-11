@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import styles from "./css/CoordinatorMyPage.module.css";
+import styles from "../../css/Mypage.module.css";
+import { STATUS_CHOICES } from "../../../config/choices";
 
 const CoordinatorTaskList = () => {
   const [tasks, setTasks] = useState([]);
@@ -30,12 +31,9 @@ const CoordinatorTaskList = () => {
     fetchTasks();
   }, []);
 
-  const statusMap = {
-    open: "公開中",
-    in_progress: "進行中",
-    completed: "完了",
-    withdrawn: "取り下げ",
-  };
+  const statusMap = Object.fromEntries(
+    STATUS_CHOICES.map((choice) => [choice.value, choice.label])
+  );
 
   return (
     <div className={styles["task-list-section"]}>

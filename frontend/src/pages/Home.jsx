@@ -77,6 +77,8 @@ const Home = () => {
       } else if (role === "coordinator") {
         return task.coordinator?.id === uid || task.coordinator === null;
       } else if (role === "worker") {
+        // worker can view only when coordinator is assigned (not null)
+        if (!task.coordinator) return false;
         return task.worker?.id === uid || task.worker === null;
       }
       return false;
@@ -90,7 +92,8 @@ const Home = () => {
         "2. 以下のいずれかに該当すること:\n" +
         "   - あなたが委託人（client）\n" +
         "   - あなたが仲介人（coordinator）または仲介人が未定\n" +
-        "   - あなたが受託人（worker）または受託人が未定\n\n" +
+        "   - あなたが実行人（worker）で、かつ仲介人が設定されている（未定の場合は閲覧不可）\n" +
+        "   - あなたが実行人（worker）で、担当があなた自身\n\n" +
         "※ 現在の状態や担当者情報をご確認ください。"
       );
       return;

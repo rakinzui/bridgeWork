@@ -1,5 +1,5 @@
 import CoordinatorTaskList from "./CoordinatorTaskList";
-import styles from "./css/CoordinatorMyPage.module.css";
+import styles from "../../css/Mypage.module.css";
 import { ROLE_CHOICES } from "../../../config/choices";
 import React, { useContext } from "react";
 import { UserContext } from "../../../context/UserContext";

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import styles from "./css/ClientMyPage.module.css";
+import styles from "../../css/Mypage.module.css";
 import { REQUEST_STATUS_CHOICES } from "../../../config/choices";
 
 const ClientCoordinatorRequestList = () => {

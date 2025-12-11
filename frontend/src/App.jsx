@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import TaskDetail from "./pages/TaskDetail";
 import ClientMyPage from "./pages/mypage/client/ClientMyPage";
 import CoordinatorMyPage from "./pages/mypage/coordinator/CoordinatorMyPage";
+import WorkerMyPage from "./pages/mypage/worker/WorkerMyPage";
 
 function App() {
    return(
@@ -15,6 +16,7 @@ function App() {
         <Route path="/task/:id" element={<TaskDetail />} />
         <Route path="/mypage/client" element={<ClientMyPage />} />
         <Route path="/mypage/coordinator" element={<CoordinatorMyPage />} />
+        <Route path="/mypage/worker" element={<WorkerMyPage />} />
       </Routes>
    )
 }

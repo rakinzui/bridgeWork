@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import styles from "./css/CoordinatorMyPage.module.css";
+import styles from "../../css/Mypage.module.css";
 import {REQUEST_STATUS_CHOICES}  from "../../../config/choices";
 
 const CoordinatorMyRequests = () => {
@@ -48,7 +48,7 @@ const CoordinatorMyRequests = () => {
         <tbody>
           {requests.length === 0 ? (
             <tr>
-              <td colSpan="6" style={{ textAlign: "center" }}>
+              <td colSpan="5" style={{ textAlign: "center" }}>
                 送信した仲介人申請はありません。
               </td>
             </tr>
