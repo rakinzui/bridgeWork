@@ -24,7 +24,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ("id", "username","role")
+        fields = ("id", "username", "role", "credit_score")
 
 class TaskSerializer(serializers.ModelSerializer):
     client = UserSerializer(read_only=True)

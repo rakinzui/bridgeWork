@@ -2,9 +2,13 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './css/Register.module.css'; // 引入 CSS
 import { ROLE_CHOICES } from '../config/choices';
+import { useTranslation } from "react-i18next";
+import LanguageSwitcher from '../components/LanguageSwitcher';
+
 
 const Register = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -27,7 +31,7 @@ const Register = () => {
     setMessage('');
 
     if (formData.password !== formData.confirmPassword) {
-      setMessage('パスワードが一致しません ❌');
+      setMessage(`${t("password_mismatch")} ❌`);
       return;
     }
 
@@ -49,40 +53,41 @@ const Register = () => {
       });
 
       if (response.ok) {
-        setMessage('登録成功 ✅');
+        setMessage(`${t("register_success")} ✅`);
       } else {
-        let errorMsg = '登録失敗 ❌';
+        let errorMsg = `${t("register_failed")} ❌`;
         try {
           const errorData = await response.json();
           console.error('Registration error response:', errorData);
           if (errorData.detail) {
-            errorMsg = `登録失敗 ❌ (${errorData.detail})`;
+            errorMsg = `${t("register_failed")} ❌ (${errorData.detail})`;
           } else if (errorData.message) {
-            errorMsg = `登録失敗 ❌ (${errorData.message})`;
+            errorMsg = `${t("register_failed")} ❌ (${errorData.message})`;
           } else if (typeof errorData === 'object') {
-            errorMsg = '登録失敗 ❌ (' + Object.entries(errorData)
+            errorMsg = `${t("register_failed")} ❌ (` + Object.entries(errorData)
               .map(([key, val]) => `${key}: ${Array.isArray(val) ? val.join(', ') : val}`)
               .join('; ') + ')';
           }
         } catch (jsonErr) {
-          errorMsg += ' (サーバーからの詳細情報なし)';
+          errorMsg += ` (${t("no_server_detail")})`;
         }
         setMessage(errorMsg);
       }
     } catch (error) {
-      setMessage(`登録失敗 ❌ (${error.message || 'ネットワークエラー'})`);
+      setMessage(`${t("register_failed")} ❌ (${error.message || t("network_error")})`);
     }
   };
 
   return (
     <div className={styles['register-container']}>
-      <h2>ユーザー登録</h2>
+      <LanguageSwitcher />  
+      <h2>{t("register_page_title")}</h2>
       <form
         className={styles['register-form']}
         onSubmit={handleSubmit}
         style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
       >
-        <label htmlFor="username" style={{ color: '#222' }}>ユーザー名</label>
+        <label htmlFor="username" style={{ color: '#222' }}>{t("username")}</label>
         <input
           className={styles['register-input']}
           type="text"
@@ -93,7 +98,7 @@ const Register = () => {
           required
         />
 
-        <label htmlFor="email" style={{ color: '#222' }}>メールアドレス</label>
+        <label htmlFor="email" style={{ color: '#222' }}>{t("email")}</label>
         <input
           className={styles['register-input']}
           type="email"
@@ -104,7 +109,7 @@ const Register = () => {
           required
         />
 
-        <label htmlFor="password" style={{ color: '#222' }}>パスワード</label>
+        <label htmlFor="password" style={{ color: '#222' }}>{t("password")}</label>
         <input
           className={styles['register-input']}
           type="password"
@@ -115,7 +120,7 @@ const Register = () => {
           required
         />
 
-        <label htmlFor="confirmPassword" style={{ color: '#222' }}>パスワード確認</label>
+        <label htmlFor="confirmPassword" style={{ color: '#222' }}>{t("confirm_password")}</label>
         <input
           className={styles['register-input']}
           type="password"
@@ -126,7 +131,7 @@ const Register = () => {
           required
         />
 
-        <label htmlFor="role" style={{ color: '#222' }}>ユーザー役割</label>
+        <label htmlFor="role" style={{ color: '#222' }}>{t("user_role")}</label>
         <select
           className={styles['register-input']}
           id="role"
@@ -140,7 +145,7 @@ const Register = () => {
           ))}
         </select>
 
-        <button className={styles['register-button']} type="submit">登録</button>
+        <button className={styles['register-button']} type="submit">{t("register")}</button>
       </form>
       {message && <p>{message}</p>}
 
@@ -149,7 +154,7 @@ const Register = () => {
         style={{ marginTop: '10px', backgroundColor: '#A0E7E5', color: '#222' }}
         onClick={() => navigate('/')}
       >
-        ログイン画面に戻る
+        {t("back_to_login")}
       </button>
     </div>
   );

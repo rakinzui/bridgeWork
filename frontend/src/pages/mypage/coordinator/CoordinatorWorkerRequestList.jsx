@@ -3,10 +3,12 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import styles from "../../css/Mypage.module.css";
 import {REQUEST_STATUS_CHOICES}  from "../../../config/choices";
+import { useTranslation } from "react-i18next";
 
 const CoordinatorWorkerRequestList = () => {
   const [requests, setRequests] = useState([]);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchRequests = async () => {
@@ -17,10 +19,10 @@ const CoordinatorWorkerRequestList = () => {
             Authorization: `Bearer ${token}`
           }
         });
-        console.log("取得した実行人応募一覧データ:", response.data);
+        console.log(t("coordinator_worker_request_fetch_success"), response.data);
         setRequests(response.data);
       } catch (error) {
-        console.error("実行人応募一覧の取得失敗:", error);
+        console.error(t("coordinator_worker_request_fetch_failed"), error);
       }
     };
     fetchRequests();
@@ -31,7 +33,7 @@ const CoordinatorWorkerRequestList = () => {
   );
 
   const handleApprove = async (id) => {
-    if (!confirm("この実行人の応募を承認しますか？")) return;
+    if (!confirm(t("confirm_approve_worker_request"))) return;
     const token = localStorage.getItem("access");
     try {
       await axios.post(`http://127.0.0.1:8000/api/coordinator/worker-requests/${id}/approve/`, {}, {
@@ -39,47 +41,47 @@ const CoordinatorWorkerRequestList = () => {
           Authorization: `Bearer ${token}`
         }
       });
-      alert("承認しました！");
+      alert(t("approved_success"));
       setRequests((prev) =>
         prev.map((r) =>
           r.id === id ? { ...r, status: "approved" } : r
         )
       );
     } catch (error) {
-      alert("承認に失敗しました");
+      alert(t("approved_failed"));
     }
   };
 
   const handleReject = async (id) => {
-    if (!confirm("この実行人の応募を拒否しますか？")) return;
+    if (!confirm(t("confirm_reject_worker_request"))) return;
 
     try {
       await axios.post(`/api/coordinator/worker-requests/${id}/reject/`);
-      alert("拒否しました");
+      alert(t("rejected_success"));
       setRequests((prev) =>
         prev.map((r) =>
           r.id === id ? { ...r, status: "rejected" } : r
         )
       );
     } catch (error) {
-      alert("拒否に失敗しました");
+      alert(t("rejected_failed"));
     }
   };
 
   return (
     <div className={styles["task-list-section"]}>
-      <h2 className={styles["title"]}>実行人応募一覧</h2>
+      <h2 className={styles["title"]}>{t("coordinator_worker_request_list_title")}</h2>
 
       {requests.length > 0 ? (
         <table className={styles["taskTable"]}>
           <thead>
             <tr>
-              <th>タスク識別番号</th>
-              <th>タイトル</th>
-              <th>実行人</th>
-              <th>申請日</th>
-              <th>状態</th>
-              <th>操作</th>
+              <th>{t("task_id_number")}</th>
+              <th>{t("title")}</th>
+              <th>{t("worker")}</th>
+              <th>{t("applied_date")}</th>
+              <th>{t("status")}</th>
+              <th>{t("operation")}</th>
             </tr>
           </thead>
 
@@ -89,7 +91,16 @@ const CoordinatorWorkerRequestList = () => {
                 <td>{req.task_id_number}</td>
                 <td>{req.task_title}</td>
                 <td>{req.worker_name}</td>
-                <td>{req.created_at}</td>
+                <td>
+                    {req.created_at
+                      ? (() => {
+                          const d = new Date(req.created_at);
+                          return `${d.getFullYear()}/${String(
+                            d.getMonth() + 1
+                          ).padStart(2, "0")}/${String(d.getDate()).padStart(2, "0")}`;
+                        })()
+                      : ""}
+                </td>
                 <td>{statusMap[req.status]}</td>
 
                 <td>
@@ -99,13 +110,13 @@ const CoordinatorWorkerRequestList = () => {
                         style={{ backgroundColor: "green", color: "white" }}
                         onClick={() => handleApprove(req.id)}
                       >
-                        承認
+                        {t("approve")}
                       </button>
                       <button
                         style={{ backgroundColor: "red", color: "white", marginLeft: "8px" }}
                         onClick={() => handleReject(req.id)}
                       >
-                        拒否
+                        {t("reject")}
                       </button>
                     </>
                   ) : (
@@ -118,7 +129,7 @@ const CoordinatorWorkerRequestList = () => {
         </table>
       ) : (
         <div style={{ textAlign: "center" }}>
-          実行人からの応募はまだありません。
+          {t("no_worker_applications")}
         </div>
       )}
     </div>

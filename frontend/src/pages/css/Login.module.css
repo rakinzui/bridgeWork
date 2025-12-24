@@ -5,9 +5,9 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-image: url('../../assets/img/backgroud.png');
+  background-image: url('../../assets/img/background.png');
   background-size: cover;
-  background-position: center;
+  background-position: center 40%;
   background-repeat: no-repeat;
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);

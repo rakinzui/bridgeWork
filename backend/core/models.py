@@ -14,6 +14,9 @@ def generate_8digit_id():
 
 class CustomUser(AbstractUser):
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='client')
+    credit_score = models.IntegerField(
+        default=50,
+    )
 
     def __str__(self):
         return f"{self.username} ({self.get_role_display()})"

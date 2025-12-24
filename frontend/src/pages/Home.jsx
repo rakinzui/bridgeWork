@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import styles from "./css/Home.module.css";
 import { UserContext } from "../context/UserContext";
 import { ROLE_CHOICES,TASK_TYPE_CHOICES,STATUS_CHOICES,REQUEST_STATUS_CHOICES} from "../config/choices";
+import LanguageSwitcher from "../components/LanguageSwitcher";
+import { useTranslation } from "react-i18next";
 
 const taskTypeMap = Object.fromEntries(
   TASK_TYPE_CHOICES.map(choice => [choice.value, choice.label])
@@ -13,11 +15,8 @@ const statusMap = Object.fromEntries(
   STATUS_CHOICES.map(choice => [choice.value, choice.label])
 );
 
-const roleMap = Object.fromEntries(
-  ROLE_CHOICES.map(choice => [choice.value, choice.label])
-);
-
 const Home = () => {
+  const { t } = useTranslation();
   const [tasks, setTasks] = useState([]);
   const [filterType, setFilterType] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
@@ -60,11 +59,12 @@ const Home = () => {
     });
   }, [setUser]);
 
-  if (!user) {
-    return <p style={{ textAlign: "center", color: "#fff" }}>ユーザー情報を読み込んでいます...</p>;
-  }
-
   const handleDetail = (task) => {
+    if (!user) {
+      alert(t("login_required"));
+      return;
+    }
+
     const canOpenTask = (task, currentUser) => {
       if (!currentUser) return false;
       if (task.status !== "open") return false;
@@ -86,15 +86,7 @@ const Home = () => {
 
     if (!canOpenTask(task, user)) {
       alert(
-        "このタスクを閲覧できません。\n\n" +
-        "■ 閲覧可能な条件:\n" +
-        "1. 状態が『公開中』であること\n" +
-        "2. 以下のいずれかに該当すること:\n" +
-        "   - あなたが委託人（client）\n" +
-        "   - あなたが仲介人（coordinator）または仲介人が未定\n" +
-        "   - あなたが実行人（worker）で、かつ仲介人が設定されている（未定の場合は閲覧不可）\n" +
-        "   - あなたが実行人（worker）で、担当があなた自身\n\n" +
-        "※ 現在の状態や担当者情報をご確認ください。"
+        t("cannot_view_task")
       );
       return;
     }
@@ -104,70 +96,6 @@ const Home = () => {
 
   return (
     <>
-      <div style={{
-        position: "absolute",
-        top: "20px",
-        right: "25px",
-        color: "#fff",
-        fontWeight: "bold",
-        fontSize: "16px",
-        textAlign: "right"
-      }}>
-        <div>hello, {user.username}さん</div>
-        <div>ユーザー種別: {roleMap[user.role]}</div>
-        <button
-          style={{
-            marginTop: "8px",
-            padding: "6px 12px",
-            borderRadius: "4px",
-            border: "none",
-            backgroundColor: "#00bfa5",
-            color: "#fff",
-            fontWeight: "bold",
-            cursor: "pointer"
-          }}
-          onClick={() => {
-            if (!user) {
-              alert("ユーザー情報を取得できていません。");
-              return;
-            }
-            if (user.role === "client") {
-              navigate("/mypage/client");
-            } else if (user.role === "coordinator") {
-              navigate("/mypage/coordinator");
-            } else if (user.role === "worker") {
-              navigate("/mypage/worker");
-            } else {
-              alert("マイページにアクセスできません。ユーザー種別を確認してください。");
-            }
-          }}
-        >
-          マイページ
-        </button>
-        <button
-          style={{
-            marginTop: "8px",
-            marginLeft: "10px",
-            padding: "6px 12px",
-            borderRadius: "4px",
-            border: "none",
-            backgroundColor: "#f44336",
-            color: "#fff",
-            fontWeight: "bold",
-            cursor: "pointer"
-          }}
-          onClick={() => {
-            localStorage.removeItem("access");
-            localStorage.removeItem("refresh");
-            localStorage.removeItem("user");
-            setUser(null);
-            navigate("/");
-          }}
-        >
-          ログアウト
-        </button>
-      </div>
-      <h1 style={{ textAlign: "center", color: "#fff", fontWeight: "bold" }}>BridgeWorkへようこそ</h1>
 
       {/* フィルターセクション */}
       <div className={styles["filter-section"]}>
@@ -183,7 +111,7 @@ const Home = () => {
           {/* タスク種類 */}
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <label htmlFor="typeFilter">
-              <strong style={{ color: "#fff" }}>タスク種類:</strong>
+              <strong style={{ color: "#ffffff" }}>{t("task_type")}</strong>
             </label>
             <select
               id="typeFilter"
@@ -196,7 +124,7 @@ const Home = () => {
                 fontSize: "14px"
               }}
             >
-              <option value="">全て</option>
+              <option value="">{t("all")}</option>
               {Object.entries(taskTypeMap).map(([key, val]) => (
                 <option key={key} value={key}>{val}</option>
               ))}
@@ -206,7 +134,7 @@ const Home = () => {
           {/* 状態 */}
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <label htmlFor="statusFilter">
-              <strong style={{ color: "#fff" }}>状態:</strong>
+              <strong style={{ color: "#ffffff" }}>{t("status")}</strong>
             </label>
             <select
               id="statusFilter"
@@ -219,7 +147,7 @@ const Home = () => {
                 fontSize: "14px"
               }}
             >
-              <option value="">全て</option>
+              <option value="">{t("all")}</option>
               {Object.entries(statusMap).map(([key, val]) => (
                 <option key={key} value={key}>{val}</option>
               ))}
@@ -229,7 +157,7 @@ const Home = () => {
           {/* ソート */}
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <label htmlFor="sortFilter">
-              <strong style={{ color: "#fff" }}>並び替え:</strong>
+              <strong style={{ color: "#ffffff" }}>{t("sort_by")}</strong>
             </label>
             <select
               id="sortFilter"
@@ -242,18 +170,18 @@ const Home = () => {
                 fontSize: "14px"
               }}
             >
-              <option value="">なし</option>
-              <option value="price_asc">報酬（昇順）</option>
-              <option value="price_desc">報酬（降順）</option>
-              <option value="updated_asc">更新日（古→新）</option>
-              <option value="updated_desc">更新日（新→古）</option>
+              <option value="">{t("none")}</option>
+              <option value="price_asc">{t("price_asc")}</option>
+              <option value="price_desc">{t("price_desc")}</option>
+              <option value="updated_asc">{t("updated_asc")}</option>
+              <option value="updated_desc">{t("updated_desc")}</option>
             </select>
           </div>
 
           {/* 開けるタスク */}
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <label htmlFor="openableFilter">
-              <strong style={{ color: "#fff" }}>閲覧可能なタスクのみ:</strong>
+              <strong style={{ color: "#ffffff" }}>{t("openable_only")}</strong>
             </label>
             <input
               type="checkbox"
@@ -268,7 +196,7 @@ const Home = () => {
 
       {/* タスクカード */}
       {tasks.length === 0 ? (
-        <p style={{ textAlign: "center" }}>現在、タスクはありません。</p>
+        <p style={{ textAlign: "center" }}>{t("no_tasks")}</p>
       ) : (
         <div className={styles["home-container"]}>
           {tasks
@@ -276,13 +204,14 @@ const Home = () => {
               const matchType = !filterType || task.task_type === filterType;
               const matchStatus = !filterStatus || task.status === filterStatus;
 
-              const uid = user.id;
-              const role = user.role;
+              const uid = user?.id;
+              const role = user?.role;
 
               const matchOpenable = !openableOnly || (
-                task.status === "open" && (
+                user && task.status === "open" && (
                   (role === "client" && task.client?.id === uid) ||
-                  ((role === "coordinator" || role === "worker") && (task[role]?.id === uid || task[role] === null))
+                  ((role === "coordinator" || role === "worker") &&
+                    (task[role]?.id === uid || task[role] === null))
                 )
               );
 
@@ -298,14 +227,14 @@ const Home = () => {
             })
             .map(task => (
               <div key={task.id} className={styles["task-card"]} onClick={() => handleDetail(task)}>
-                <p><strong>タイトル:</strong> {task.title || "未設定"}</p>
-                <p><strong>タスク種類:</strong> {taskTypeMap[task.task_type] || task.task_type}</p>
-                <p><strong>依頼者:</strong> {task.client?.username}</p>
-                <p><strong>仲介人:</strong> {task.coordinator?.username || '応募なし'}</p>
-                <p><strong>実行人:</strong> {task.worker?.username || '応募なし'}</p>
-                <p><strong>状態:</strong> {statusMap[task.status] || task.status}</p>
-                <p><strong>報酬:</strong> {task.price ? `${task.price} 円` : "未設定"}</p>
-                <p><strong>期限:</strong> {task.deadline || "未設定"}</p>
+                <p><strong>{t("title")}</strong> {task.title || "未設定"}</p>
+                <p><strong>{t("task_type")}</strong> {taskTypeMap[task.task_type] || task.task_type}</p>
+                <p><strong>{t("client")}</strong> {task.client?.username}</p>
+                <p><strong>{t("coordinator")}</strong> {task.coordinator?.username || '応募なし'}</p>
+                <p><strong>{t("worker")}</strong> {task.worker?.username || '応募なし'}</p>
+                <p><strong>{t("status")}</strong> {statusMap[task.status] || task.status}</p>
+                <p><strong>{t("reward")}</strong> {task.price ? `${task.price} 円` : "未設定"}</p>
+                <p><strong>{t("deadline")}</strong> {task.deadline || "未設定"}</p>
               </div>
             ))}
         </div>

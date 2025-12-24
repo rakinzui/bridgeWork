@@ -3,18 +3,18 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
-  padding-top: 300px;
-  background-image: url('../../assets/img/backgroud.png');
+  background-image: url('../../assets/img/background.png');
   background-size: cover;
-  background-position: center;
+  background-position: center 40%;
   background-repeat: no-repeat;
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   width: 100vw;
   margin: 0;
+  padding: 0;
   transition: background 1s ease-in-out;
   animation: fadeIn 1.2s ease-in;
 }
