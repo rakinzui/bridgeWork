@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny,IsAuthenticated
 from rest_framework.response import Response
 from .serializers import RegisterSerializer,TaskSerializer,UserSerializer,coordinatorRequestSerializer,workerRequestSerializer
-from .models import Task,coordinatorRequest,workerRequest
+from .models import Task, coordinatorRequest, workerRequest, CoordinatorProfile
 from rest_framework import generics
 from rest_framework.views import APIView
 
@@ -17,8 +17,24 @@ def ping(reqeust):
 def register_user(request):
     serializer = RegisterSerializer(data=request.data)
     if serializer.is_valid():
-        serializer.save()
-        return Response({'message': 'ユーザー登録が完了しました。'}, status=status.HTTP_201_CREATED)
+        user = serializer.save()
+
+        # 如果用户类型是中间人，则创建中间人档案
+        if getattr(user, "role", None) == "coordinator":
+            CoordinatorProfile.objects.get_or_create(
+                user=user,
+                defaults={
+                    "level": 1,
+                    "commission_rate": 5,
+                    "credit_score": 100,
+                    "banned": False,
+                }
+            )
+
+        return Response(
+            {'message': 'ユーザー登録が完了しました。'},
+            status=status.HTTP_201_CREATED
+        )
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class TaskListCreateView(generics.ListCreateAPIView):
@@ -164,7 +180,7 @@ def approve_coordinator_request(request, request_id):
 
     # 状態更新
     coordinator_request.status = "approved"
-    # タスクに仲介人をセット
+    # タスクに仲介者をセット
     task = coordinator_request.task
     task.coordinator = coordinator_request.coordinator
     task.save()
@@ -191,7 +207,7 @@ def reject_coordinator_request(request, request_id):
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def coordinator_my_tasks(request):
-    """仲介人用：自分が担当するタスク一覧"""
+    """仲介者用：自分が担当するタスク一覧"""
     user = request.user
     tasks = Task.objects.filter(coordinator=user).order_by("-updated_at")
     serializer = TaskSerializer(tasks, many=True)
@@ -207,9 +223,9 @@ def coordinator_my_tasks(request):
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def worker_my_tasks(request):
-    """実行人用：自分が担当するタスク一覧"""
+    """発注者用：自分が担当するタスク一覧"""
     user = request.user
-    print("実行人ユーザー情報", user)
+    print("発注者ユーザー情報", user)
     tasks = Task.objects.filter(worker=user).order_by("-updated_at")
     serializer = TaskSerializer(tasks, many=True)
     data = serializer.data
@@ -219,14 +235,14 @@ def worker_my_tasks(request):
         item["client_id"] = task.client.id
         item["coordinator_username"] = task.coordinator.username if task.coordinator else None
         
-    print("実行人の担当タスク一覧データ:", data)
+    print("発注者の担当タスク一覧データ:", data)
 
     return Response(data)
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def coordinator_my_applications(request):
-    """仲介人用：自分が応募した仲介申請一覧"""
+    """仲介者用：自分が応募した仲介申請一覧"""
     user = request.user
     applications = coordinatorRequest.objects.filter(coordinator=user).select_related("task")
     serializer = coordinatorRequestSerializer(applications, many=True)
@@ -236,17 +252,17 @@ def coordinator_my_applications(request):
         item["task_title"] = br.task.title
         item["task_id_number"] = br.task.id_number
         item["client_username"] = br.task.client.username
-    print("仲介人の応募一覧データ:", data)
+    print("仲介者の応募一覧データ:", data)
     return Response(data)
 
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def list_worker_requests(request):
-    """仲介人用：実行人からの応募一覧（仲介人が担当するタスク）"""
+    """仲介者用：発注者からの応募一覧（仲介者が担当するタスク）"""
     user = request.user
 
-    # 仲介人が担当するタスク
+    # 仲介者が担当するタスク
     tasks = Task.objects.filter(coordinator=user)
 
     # それらのタスクに対する workerRequest を取得
@@ -273,7 +289,7 @@ def apply_worker(request, task_id):
     # すでに応募しているか確認
     existing = workerRequest.objects.filter(task=task, worker=user).first()
     if existing:
-        return Response({"detail": "すでに実行人として応募済みです"}, status=400)
+        return Response({"detail": "すでに発注者として応募済みです"}, status=400)
 
     wr = workerRequest.objects.create(
         task=task,
@@ -283,14 +299,14 @@ def apply_worker(request, task_id):
     )
 
     return Response({
-        "detail": "実行人として応募が完了しました",
+        "detail": "発注者として応募が完了しました",
         "request_id": wr.id
     }, status=201)
 
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def approve_worker_request(request, request_id):
-    """仲介人：実行人応募を承認する"""
+    """仲介者：発注者応募を承認する"""
     wr = get_object_or_404(workerRequest, id=request_id)
 
     if wr.task.coordinator != request.user:
@@ -308,7 +324,7 @@ def approve_worker_request(request, request_id):
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def reject_worker_request(request, request_id):
-    """仲介人：実行人応募を拒否する"""
+    """仲介者：発注者応募を拒否する"""
     wr = get_object_or_404(workerRequest, id=request_id)
 
     if wr.task.coordinator != request.user:
@@ -322,7 +338,7 @@ def reject_worker_request(request, request_id):
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def worker_my_applications(request):
-    """実行人用：自分が応募した実行人申請一覧"""
+    """発注者用：自分が応募した発注者申請一覧"""
     user = request.user
     applications = workerRequest.objects.filter(worker=user).select_related("task")
     serializer = workerRequestSerializer(applications, many=True)

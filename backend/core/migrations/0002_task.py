@@ -89,7 +89,7 @@ class Migration(migrations.Migration):
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name="client_tasks",
                         to=settings.AUTH_USER_MODEL,
-                        verbose_name="依頼人",
+                        verbose_name="発注者",
                     ),
                 ),
                 (

@@ -31,7 +31,7 @@ class Task(models.Model):
         on_delete=models.CASCADE,
         related_name='client_tasks',
         limit_choices_to={'role': 'client'},
-        verbose_name='依頼人'
+        verbose_name='発注者'
     )
     # 中間人（coordinator）: CustomUserのrole='coordinator'に限定、null許可
     coordinator = models.ForeignKey(
@@ -41,7 +41,7 @@ class Task(models.Model):
         limit_choices_to={'role': 'coordinator'},
         null=True,
         blank=True,
-        verbose_name='仲介人'
+        verbose_name='仲介者'
     )
     # 受託人（worker）: CustomUserのrole='worker'に限定、null許可
     worker = models.ForeignKey(
@@ -51,7 +51,7 @@ class Task(models.Model):
         limit_choices_to={'role': 'worker'},
         null=True,
         blank=True,
-        verbose_name='実行人'
+        verbose_name='受注者'
     )
     title = models.CharField(max_length=255, verbose_name="タイトル")
     task_type = models.CharField(max_length=30, choices=TASK_TYPE_CHOICES)
@@ -87,6 +87,26 @@ class coordinatorRequest(models.Model):
         default="pending"
     )
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+# 中間人（仲介者）プロフィール
+class CoordinatorProfile(models.Model):
+    user = models.OneToOneField(
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name="coordinator_profile",
+        limit_choices_to={'role': 'coordinator'},
+        verbose_name="仲介者ユーザー"
+    )
+    level = models.PositiveIntegerField(default=1, verbose_name="レベル")
+    commission_rate = models.PositiveIntegerField(default=5, verbose_name="報酬率(%)")
+    credit_score = models.IntegerField(default=0, verbose_name="信用スコア")
+    banned = models.BooleanField(default=False, verbose_name="利用停止")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"CoordinatorProfile({self.user.username}, Lv{self.level}, {self.commission_rate}%)"
     
 
 class workerRequest(models.Model):
@@ -102,7 +122,7 @@ class workerRequest(models.Model):
     message = models.TextField(blank=True, null=True)
     status = models.CharField(
         max_length=20,
-        choices=REQUEST_STATUS_CHOICES,  # ★実行人応募も同じ pending/approved/rejected
+        choices=REQUEST_STATUS_CHOICES,  # ★受注者応募も同じ pending/approved/rejected
         default="pending"
     )
     created_at = models.DateTimeField(auto_now_add=True)

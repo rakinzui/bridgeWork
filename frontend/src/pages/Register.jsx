@@ -14,7 +14,7 @@ const Register = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    role: '依頼人',
+    role: '発注者',
   });
   const [message, setMessage] = useState('');
 

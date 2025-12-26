@@ -1,7 +1,7 @@
 export const ROLE_CHOICES = [
-  { value: 'client', label: '依頼人' },
-  { value: 'coordinator', label: '仲介人' },
-  { value: 'worker', label: '実行人'},
+  { value: 'client', label: '発注者' },
+  { value: 'coordinator', label: '仲介者' },
+  { value: 'worker', label: '受注者'},
 ];
 
 export const TASK_TYPE_CHOICES = [

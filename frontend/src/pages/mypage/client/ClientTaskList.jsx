@@ -103,7 +103,7 @@ const ClientTaskList = () => {
                     <th>期限</th>
                     <th>状態</th>
                     <th>依頼者</th>
-                    <th>仲介人</th>
+                    <th>仲介者</th>
                     <th>受託者</th>
                     <th>詳細</th>
                     <th>詳細説明</th>

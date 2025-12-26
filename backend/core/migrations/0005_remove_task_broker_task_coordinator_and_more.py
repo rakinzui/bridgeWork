@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
                 on_delete=django.db.models.deletion.SET_NULL,
                 related_name="coordinator_tasks",
                 to=settings.AUTH_USER_MODEL,
-                verbose_name="仲介人",
+                verbose_name="仲介者",
             ),
         ),
         migrations.AlterField(
@@ -43,9 +43,9 @@ class Migration(migrations.Migration):
             name="role",
             field=models.CharField(
                 choices=[
-                    ("client", "依頼人"),
-                    ("coordinator", "仲介人"),
-                    ("worker", "実行人"),
+                    ("client", "発注者"),
+                    ("coordinator", "仲介者"),
+                    ("worker", "受注者"),
                 ],
                 default="client",
                 max_length=20,
@@ -89,7 +89,7 @@ class Migration(migrations.Migration):
                 on_delete=django.db.models.deletion.SET_NULL,
                 related_name="worker_tasks",
                 to=settings.AUTH_USER_MODEL,
-                verbose_name="実行人",
+                verbose_name="受注者",
             ),
         ),
     ]

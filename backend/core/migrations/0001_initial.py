@@ -101,7 +101,7 @@ class Migration(migrations.Migration):
                     "role",
                     models.CharField(
                         choices=[
-                            ("client", "依頼人"),
+                            ("client", "発注者"),
                             ("coordinator", "中間人"),
                             ("worker", "受託人"),
                         ],

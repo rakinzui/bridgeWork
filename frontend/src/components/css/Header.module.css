@@ -1,4 +1,6 @@
 .header {
+  position: fixed;
+  top: 0;
   left: 0;
   right: 0;
   height: 72px;
@@ -7,9 +9,23 @@
   justify-content: space-between;
   padding: 0 24px;
   box-sizing: border-box;
-  background: linear-gradient(180deg, #ffffff 0%, #f7f9fc 100%);
-  border-bottom: 1px solid #e5e7eb;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+  /* 视觉强化 */
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(247, 249, 252, 0.92) 100%
+  );
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  border-bottom: 1px solid rgba(229, 231, 235, 0.9);
+
+  /* 更明显的悬浮阴影 */
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.08),
+    0 1px 0 rgba(255, 255, 255, 0.6) inset;
+
   z-index: 1000;
 }
 

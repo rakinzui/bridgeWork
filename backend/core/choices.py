@@ -2,9 +2,9 @@
 
 # ユーザーの役割
 ROLE_CHOICES = [
-    ('client', '依頼人'),
-    ('coordinator', '仲介人'),
-    ('worker', '実行人'),
+    ('client', '発注者'),
+    ('coordinator', '仲介者'),
+    ('worker', '受注者'),
 ]
 
 # タスク種類

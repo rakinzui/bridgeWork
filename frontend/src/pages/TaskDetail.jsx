@@ -33,7 +33,7 @@ const TaskDetail = () => {
   const userType = user?.role;
 
   const handlecoordinatorApply = async (message) => {
-    if (!window.confirm("仲介人として応募しますか？")) return;
+    if (!window.confirm("仲介者として応募しますか？")) return;
 
     const token = localStorage.getItem("access");
 
@@ -57,7 +57,7 @@ const TaskDetail = () => {
   };
 
   const handleWorkerApply = async (message) => {
-    if (!window.confirm("実行人として応募しますか？")) return;
+    if (!window.confirm("受注者として応募しますか？")) return;
 
     const token = localStorage.getItem("access");
 
@@ -86,8 +86,8 @@ const TaskDetail = () => {
       <p><strong>タスク番号:</strong> {task.id_number || "なし"}</p>
       <p><strong>タスクタイプ:</strong> {taskTypeMap[task.task_type] || task.task_type}</p>
       <p><strong>委託人:</strong> {task.client?.username || "不明"}</p>
-      <p><strong>仲介人:</strong> {task.coordinator?.username || "応募なし"}</p>
-      <p><strong>実行人:</strong> {task.worker?.username || "応募なし"}</p>
+      <p><strong>仲介者:</strong> {task.coordinator?.username || "応募なし"}</p>
+      <p><strong>受注者:</strong> {task.worker?.username || "応募なし"}</p>
       <p><strong>状態:</strong> {statusMap[task.status] || task.status}</p>
       <p><strong>タイトル:</strong> {task.title || "なし"}</p>
       <p><strong>詳細:</strong> {task.description || "なし"}</p>
@@ -111,7 +111,7 @@ const TaskDetail = () => {
               cursor: 'pointer'
             }}
           >
-            仲介人に応募する
+            仲介者に応募する
           </button>
           {showCoordinatorMessage && (
             <div className={styles["message-input-container"]} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -146,7 +146,7 @@ const TaskDetail = () => {
               cursor: 'pointer'
             }}
           >
-            実行人に応募する
+            受注者に応募する
           </button>
           {showWorkerMessage && (
             <div className={styles["message-input-container"]} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
